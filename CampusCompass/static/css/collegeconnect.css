@@ -1,0 +1,369 @@
+/* 
+
+    CSS required for Campus Compass Template 
+    Copyright (c) 2023 Campus Compass 
+    All rights reserved.
+
+*/
+/*
+
+CSS Coding Standards:
+
+Use Lowercase with Hyphens: Write CSS class names and IDs in lowercase with hyphens for readability,
+e.g., .header-style, #main-content.
+
+Indentation: Use consistent indentation of 4 spaces.
+
+Comments: Add comments to describe the purpose of specific styles or sections.
+
+*/
+
+/* General Styles */
+
+body {
+    font-family: sans-serif;
+    background-color: #242424;
+    color:#fff;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 2000px;
+    margin: 70px auto;
+    padding: 50px;
+    /* background-color: #262630; */
+    /* box-shadow: 0 0 2px hsl(0, 4%, 42%); */
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 4px;
+}
+
+/* Header Styles */
+.header {
+    background-color: #202020;
+    color: #fff;
+    padding: 20px;
+}
+
+p {
+    font-size: medium;
+    align-items: justify;
+}
+
+h1 {
+    font-size: 40px;
+    padding: 10px; 
+}
+
+.header h1 {
+    font-size: 40px;
+    padding: 10px;
+}
+
+/* Defining colors for text and background */
+
+/* .bg-dusky - Dusky background color (#202020) */
+.bg-dusky {
+    background-color: #202020;
+}
+
+/* .bg-charcoal-black - Charcoal Black background color (#242424) */
+.bg-charcoal-black {
+    background-color: #242424;
+}
+
+
+/* .bg-black - Black background color (#000) */
+.bg-black {
+    background-color: #000;
+}
+
+/* .bg-cloudy - Cloudy background color (#262630) */
+.bg-cloudy {
+    background-color: #262630;
+}
+
+/* .text-white - White text color (#fff) */
+.text-white {
+    color: #fff;
+}
+
+/* .text-black - Black text color (#000) */
+.text-black {
+    color:#000;
+}
+
+/* .text-offwhite - Offwhite text color (#ccc) */
+.text-offwhite {
+    color:#ccc;
+}
+
+
+/* Navigation Styles */
+.navbar {
+    background-color: #202020;
+    color: #fff;
+    padding: 10px;
+}
+
+.navbar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.navbar li {
+    display: inline;
+    margin-right: 20px;
+}
+
+.navbar div form ul {
+    list-style: none;
+    display: inline;
+    padding: 0;
+}
+
+.navbar div form ul li{
+    display: inline;
+    margin-right: 20px;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.navbar form
+
+/* Main Content Styles */
+.main-content {
+    padding: 20px;
+}
+
+/* search button styles */
+.search {
+    background-color: #202020;
+    color: #fff;
+    padding: 5px;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 20px;
+}
+
+.search:hover{
+    background-color: #3f4b6e;
+}
+
+
+/* Button Styles */
+.button {
+    background-color: #202020;
+    color: #fff;
+    padding: 10px;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.button:hover{
+    background-color: #3f4b6e;
+}
+
+.wide-btn{
+    width:90%;
+    padding:20px;
+    margin:20px;
+    border-radius:20px
+}
+
+/* Form Styles */
+.form {
+    margin: 20px;
+    padding: 20px;
+}
+
+.input, .textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+}
+
+.form button {
+    background-color: #202020;
+    color: #fff;
+    padding: 50px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+
+}
+
+.form-group {
+    margin: 20px;
+    padding: 20px;
+}
+/* Adjust specific form elements */
+
+
+
+/* Footer Styles */
+.footer {
+    background-color: #202020;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Top Navigation */
+.top-navigation-bar {
+    overflow: hidden;
+}
+
+/* Links in Navigation Bar */
+.top-navigation-bar a {
+    color: #fff;
+}
+
+/* Hover Effect for Links */
+.top-navigation-bar a:hover {
+    background-color: #262630;
+    color: #fff;
+}
+
+/* Active/Current Link */
+.top-navigation-bar a.active {
+    background-color: #262630;
+    color: #fff;
+}
+
+/* Full-width Input Fields */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 2px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background: #f1f1f1;
+}
+
+/* Input Focus Styling */
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+/* Alert Message Box */
+.alert {
+    padding: 20px;
+    background-color: #f44336; /* Red */
+    color: white;
+    margin-bottom: 15px;
+    opacity: 1;
+    transition: opacity 0.6s; /* 600ms to fade out */
+}
+
+/* Close Button for Alert */
+.close-button {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Close Button Hover Effect */
+.close-button:hover {
+    color: black;
+}
+
+/* Box Element Styling */
+.box-element {
+    box-shadow: 0 0 16px hsl(0, 0%, 62%);
+    background-color: #262630;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+/* Post app css */
+
+.feed-link {
+    color: #f1f1f1;
+    text-decoration: none;
+}
+
+.feed-link:hover {
+    background-color: #3f4b6e;
+}
+
+.post-content {
+    align-items: justify;
+    margin:20px;
+    padding: 10px;
+}
+
+.comment-card{
+    background-color: #242424;
+    box-shadow: 0 0 16px hsl(0, 0%, 9%);
+    border-radius: 1px;
+    padding: 10px;
+    margin: 10px;
+}
+
+
+.card {
+    background-color: #202020; /* Dusky */
+    box-shadow: 0 0 16px hsl(0, 1%, 26%);
+    border-radius: 4px;
+    padding: 20px;
+    margin: 10px;
+    /* box-shadow: 0 2px 4px rgba(255, 255, 255, 0.808); */
+}
+
+
+/* Justify content */
+.justify-center {
+    justify-content: center;
+}
+
+.justify-left {
+    justify-content: flex-start;
+}
+
+.justify-right {
+    justify-content: flex-end;
+}
+
+/* dropdown item */
+.dropdown-item {
+    background-color: #202020;
+    color: #ccc;
+}
+
+.dropdown-item:hover {
+    background-color: #262630;
+    color: #ccc;
+}
+
+
