@@ -1,0 +1,44 @@
+/.venv
+/.vscode
+/CampusCompass/CampusCompass/settings.py
+/CampusCompass/CampusCompass/.env
+/CampusCompass/CampusCompass/__pycache__
+
+# Ignore all files and subfolders in myfolder
+/CampusCompass/home/migrations/*
+# Allow (track) the specific file important.txt
+!/CampusCompass/home/migrations/__init__.py
+/CampusCompass/home/__pycache__
+
+
+# Ignore all files and subfolders in myfolder
+/CampusCompass/post/migrations/*
+# Allow (track) the specific file important.txt
+!/CampusCompass/post/migrations/__init__.py
+/CampusCompass/post/__pycache__
+
+# Ignore all files and subfolders in myfolder
+/CampusCompass/branch/migrations/*
+# Allow (track) the specific file important.txt
+!/CampusCompass/branch/migrations/__init__.py
+/CampusCompass/branch/__pycache__
+
+# Ignore all files and subfolders in myfolder
+/CampusCompass/account/migrations/*
+# Allow (track) the specific file important.txt
+!/CampusCompass/account/migrations/__init__.py
+/CampusCompass/account/__pycache__
+
+# Ignore all files and subfolders in myfolder
+/CampusCompass/resource/migrations/*
+# Allow (track) the specific file important.txt
+!/CampusCompass/resource/migrations/__init__.py
+/CampusCompass/resource/__pycache__
+
+# Ignore all files and subfolders in myfolder
+/CampusCompass/announcement/migrations/*
+# Allow (track) the specific file important.txt
+!/CampusCompass/announcement/migrations/__init__.py
+/CampusCompass/announcement/__pycache__
+
+/CampusCompass/media
