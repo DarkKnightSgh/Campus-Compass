@@ -42,3 +42,5 @@
 /CampusCompass/announcement/__pycache__
 
 /CampusCompass/media
+
+/CampusCompass/db.sqlite3
