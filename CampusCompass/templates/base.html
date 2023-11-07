@@ -62,7 +62,7 @@
                         <a class="nav-link text-light" href="/account/show_mentor">Find Mentors</a>
                     </li>
 
-
+                    {% if not user.is_authenticated %}
                     <li class="nav-item dropdown button ">
                         <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -77,13 +77,13 @@
                             <!-- <a class="dropdown-item button" href="#"></a> -->
                         </div>
                     </li>
-
-
-                    <!-- <li class="nav-item button">
+                    {% else %}
+                    <li class="nav-item button">
                         <a class="nav-link text-light" href="/account/logout">Logout</a>
 
-                    </li> -->
+                    </li>
 
+                    {% endif %}
 
                     <!-- Search form -->
                     <form class="d-flex">
