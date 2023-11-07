@@ -46,3 +46,38 @@ class StudentAdmin(admin.ModelAdmin):
     #     'email_confirmed',
     #     'year_of_passing_out',
     # ) 
+
+
+class MentorAdmin(admin.ModelAdmin):
+    list_display=(
+        'student',
+        'username',
+        'approved',
+        'resume',
+        'list_domains',
+    )
+    search_fields=[
+        'student',
+        'username',
+        'approved',
+        'domain'
+    ]
+    list_editable= [
+        'approved'
+    ]
+    list_filter=[
+        'domain',
+        'approved',
+        
+    ]
+
+    def list_domains(self, obj):
+        # Retrieve the list of domain tags for the mentor and return them as a string
+        domain_tags = obj.domain.all()  # Assuming 'domain' is the name of the TaggableManager field
+        return ', '.join(tag.name for tag in domain_tags)
+
+    list_domains.short_description = "Domains"  # Set a custom column header for the domains
+
+
+admin.site.register(Student,StudentAdmin)
+admin.site.register(Mentor,MentorAdmin)

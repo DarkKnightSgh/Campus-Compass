@@ -54,3 +54,40 @@ class Mentor(models.Model):
             s=Student.objects.get(pk=self.student.pk)
             s.is_mentor=False
             s.save()
+    def send_approval_mail(self):
+        # seven_day_ago=timezone.now() - timezone.timedelta(days=7)
+        if self.approved:
+            u=User.objects.get(username=self.username)
+            print("hello")
+            email_from = settings.EMAIL_HOST_USER
+            subject = 'Mentor Application Approved'
+            message = 'Congratulations '+ u.first_name+" "+ u.last_name +'!! Your mentor application has been approved. You can now mentor students at our platform College Connect.'
+            recipient_list = [self.student.college_email,u.email ]
+            # send_mail( subject, message, email_from, recipient_list ,fail_silently=False)
+            # u.email_user(subject,message)
+            # elif self.last_application_date> seven_day_ago:
+            try:
+                send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+            except Exception as e:
+                print(f"Email sending failed: {e}")
+        else:
+            u=User.objects.get(username=self.username)
+            email_from = settings.EMAIL_HOST_USER
+            subject = 'Removed as Mentor'
+            message = 'Sorry '+ u.first_name+" "+ u.last_name +', You can no longer mentor students at our platform College Connect.'
+            recipient_list = [self.student.college_email,u.email ]
+            # send_mail( subject, message, email_from, recipient_list )
+            # u.email_user(subject,message)
+            try:
+                send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+            except Exception as e:
+                print(f"Email sending failed: {e}")
+
+            
+  
+@receiver(pre_save, sender=Mentor) # a trigger that's run everytime 
+def Mentor_pre_save(sender, instance, **kwargs):
+    instance.set_ismentor()
+    instance.send_approval_mail()
+
+
