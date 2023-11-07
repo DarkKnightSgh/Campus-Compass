@@ -20,4 +20,8 @@ urlpatterns= [
     path('confirm_email',views.confirm_email,name="email_confirm"),
     path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
 
+    # mentor
+    path('mentor_registration',views.mentor_registration,name='mentor_registration'),
+
+
 ]

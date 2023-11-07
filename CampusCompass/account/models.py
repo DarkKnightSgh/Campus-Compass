@@ -31,3 +31,26 @@ class Student(models.Model):
     def __str__(self):
         return self.user.username
 
+
+class Mentor(models.Model):
+    student = models.OneToOneField(Student, on_delete=models.CASCADE,related_name='mentor')
+    username= models.CharField(max_length=300,blank=False,null=False,default="AnonymousUser")
+    resume= models.FileField(upload_to='resume/')
+    domain= TaggableManager()
+    description= models.CharField(max_length=5000,null=True, blank= True)
+    approved= models.BooleanField(default=False)
+    last_application_date = models.DateTimeField(auto_now_add=True,null=True, blank=True)
+
+    # write list domains function which returns a string
+    def list_domains(self):
+        return ", ".join([p.name for p in self.domain.all()])
+    def set_ismentor(self):
+        if self.approved:
+            # find student and update database
+            s=Student.objects.get(pk=self.student.pk)
+            s.is_mentor=True
+            s.save()
+        else:
+            s=Student.objects.get(pk=self.student.pk)
+            s.is_mentor=False
+            s.save()

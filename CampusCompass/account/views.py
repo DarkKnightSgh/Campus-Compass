@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.models import auth
 from branch.models import Department, Branch
-from .models import Student
+from .models import Student, Mentor
 from taggit.managers import TaggableManager
 from taggit.models import Tag
 
@@ -107,7 +107,7 @@ def register_submit(request):
 def login(request):
     context={}
     return render(request, 'account/login.html',context)
-    
+
 
 def login_submit(request):
     context={}
@@ -149,6 +149,33 @@ def confirm_email(request):
 
     messages.success(request, ('Your email confirmation is pending! Verify now'))
     return redirect('/')
+    
+
+class ActivateAccount(View):
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            # uid = force_text(urlsafe_base64_decode(uidb64))
+            uid=str(urlsafe_base64_decode(uidb64), 'utf-8')
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.student.email_confirmed = True
+            student=Student.objects.get(user=user)
+            student.email_confirmed=True
+            student.save()
+            user.save()
+            auth.login(request, user)
+            messages.success(request, ('Your email has been confirmed.'))
+            return redirect('/')
+        else:
+            messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+            return redirect('/')
+
+
 
 def profile(request):
     username= request.user
@@ -242,29 +269,64 @@ def edit_profile_submit(request):
     else:
         pass
 
-class ActivateAccount(View):
 
-    def get(self, request, uidb64, token, *args, **kwargs):
-        try:
-            # uid = force_text(urlsafe_base64_decode(uidb64))
-            uid=str(urlsafe_base64_decode(uidb64), 'utf-8')
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
 
-        if user is not None and account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.student.email_confirmed = True
-            student=Student.objects.get(user=user)
-            student.email_confirmed=True
-            student.save()
-            user.save()
-            auth.login(request, user)
-            messages.success(request, ('Your email has been confirmed.'))
-            return redirect('/')
+
+def can_apply_again(mentor):
+    six_months_ago = timezone.now() - timezone.timedelta(days=180)  # 6 months = 180 days
+    if mentor.last_application_date < six_months_ago:
+        # get mentor
+        mentor = Mentor.objects.filter(user=mentor).first()
+        mentor.last_application_date = None
+        mentor.save()
+
+
+def mentor_registration(request):
+    username=request.user.__str__()
+    if(username=="AnonymousUser"):
+        messages.error(request,"Please sign in first")
+        return redirect("/account/login" )
+    if request.method == "POST":
+
+        print(request.FILES)
+        
+        if  'fileupload' in request.FILES:
+            resume = request.FILES['fileupload']
+            domains_input = request.POST.get("domains")
+            domain_list = domains_input.split(",")  # Assuming domains are comma-
+            
+            user=User.objects.get(username=username)
+            student = Student.objects.get(user=user)
+            if (Mentor.objects.filter(username=username).exists()):
+                mentor=Mentor.objects.get(username=username)
+            else:
+                mentor = Mentor()
+            
+            mentor.student=student
+            mentor.username=username
+            mentor.approved=0
+            mentor.resume = resume
+            mentor.description = request.POST.get("description")
+            mentor.last_application_date= timezone.now()
+            mentor.save()
+            # mentor.domain.add(*domain_list)
+
+            for domain_name in domain_list:
+                # strip domain of spaces and make it in lower case only
+                domain_name = domain_name.strip().lower()
+                domain, created = Tag.objects.get_or_create(name=domain_name)
+                mentor.domain.add(domain)
+
+            messages.success(request,"Role for mentor successfully applied!, We will get back to you in 1 week")
+            return redirect('/account/profile')  # Redirect to a success page or any desired location
+        
         else:
-            messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('/')
-
-
-
+            messages.error(request,"Add your resume first!")
+            return redirect('/account/mentor_registration')
+        
+    context={}
+    if Mentor.objects.filter(username=username).exists():
+        mentor=Mentor.objects.get(username=username)
+        can_apply_again(mentor)
+        context['mentor']=mentor
+    return render(request, 'account/mentor_registration.html',context)  # Render the form again if it's a GET request
