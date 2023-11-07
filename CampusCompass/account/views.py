@@ -137,7 +137,7 @@ def logout(request):
 def confirm_email(request):
     user=request.user
     current_site = get_current_site(request)
-    subject = 'Activate Your College Connect Account'
+    subject = 'Activate Your Campus Compass Account'
     print(user)
     message = render_to_string('account/account_activation_email.html', {
                 'user': user,
@@ -149,7 +149,7 @@ def confirm_email(request):
 
     messages.success(request, ('Your email confirmation is pending! Verify now'))
     return redirect('/')
-    
+
 
 class ActivateAccount(View):
 
@@ -330,3 +330,31 @@ def mentor_registration(request):
         can_apply_again(mentor)
         context['mentor']=mentor
     return render(request, 'account/mentor_registration.html',context)  # Render the form again if it's a GET request
+
+
+def show_mentor(request):
+    # get all mentors of branch
+    username= request.user.__str__()
+    # get Student
+    user=User.objects.get(username=username)
+    student=Student.objects.get(user=user)
+    # Branch
+    branch=Branch.objects.get(branch_code=student.branch.branch_code)
+    mentors=Mentor.objects.filter(student__branch__branch_code=branch.branch_code,approved=True)    
+    print(mentors[0].student.user.username)
+    context={'mentors':mentors}
+    return render(request, 'account/show_mentor.html',context)
+
+def show_mentors_by_domain(request,domain):
+    # get all mentors of branch
+    username= request.user.__str__()
+    # get Student
+    user=User.objects.get(username=username)
+    student=Student.objects.get(user=user)
+    # Branch
+    mentors=Mentor.objects.filter(approved=True,domain__slug=domain)    
+    print(mentors[0].student.user.username)
+    context={'mentors':mentors}
+    return render(request, 'account/show_mentor.html',context)
+
+

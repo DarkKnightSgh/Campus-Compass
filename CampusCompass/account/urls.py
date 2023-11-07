@@ -22,6 +22,9 @@ urlpatterns= [
 
     # mentor
     path('mentor_registration',views.mentor_registration,name='mentor_registration'),
+    # show mentor
+    path('show_mentor',views.show_mentor,name="show_mentor"),
+    path('mentor/tag/<domain>',views.show_mentors_by_domain,name="show_mentors_by_domain"),
 
     # forgot / change password
     # Change Password

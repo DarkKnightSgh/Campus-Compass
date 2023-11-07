@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block metatags %}
+<title>Show Mentors : Campus Compass</title>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <!-- show usernames -->
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center">Mentors</h1>
+        </div>
+
+        {% for mentor in mentors %}
+        <div class="card text-light">
+            <a href="/account/profile/{{mentor.student.user.username}}">
+                <h3>{{mentor.student.user.first_name}} {{mentor.student.user.last_name}} ({{mentor.student.user.username}})</h3>
+            </a>
+            <br>
+            <div class="row">
+                <div class="col-sm-4">
+                    <!-- show domains -->
+                    <span>Domains : </span>
+                    {% for domain in mentor.domain.all %}
+                    <a href="/account/mentor/tag/{{domain.slug}}"><span class="text-muted">{{domain}},</span></a>
+                    {% endfor %}
+
+                    <br>
+                    <!-- resume -->
+                    <span><a href="{{mentor.resume.url}}" target="_blank">View Resume</a></span>
+                </div>
+                <div class="col-sm-4">
+                    Bio : {{mentor.student.bio}} <br>
+                    Department : {{mentor.student.department.department_name}} <br>
+                    Branch : {{mentor.student.branch.branch_name}} <br>
+                    Year of Passing Out : {{mentor.student.year_of_passing_out}}  <br>
+                </div>
+                <div class="col-sm-4">
+                    <!-- show chat if show_number enabled -->
+                    {% if mentor.student.show_number %}
+
+                    <a href="{{mentor.student.whatsapp_link}}">
+                        <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                            class="btn btn-success">
+                            Chat
+                        </button>
+                    </a>
+
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+
+
+    </div>
+
+    {% endblock %}
