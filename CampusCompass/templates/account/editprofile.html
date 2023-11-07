@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block metatags %}
+<title>Sign Up : College Connect</title>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1 class="text-center">Edit Profile</h1>
+    <br>
+    <br>
+
+    <form class="text-center bg-dusky" method="post" action="/account/edit_profile_submit">
+        {% csrf_token %}
+        <div class="row">
+
+            <!-- Personal Details -->
+            <div class="col">
+
+                <div class="form-group">
+                    <input type="text" class="form-control" id="firstname" name="firstname" value="{{user.first_name}}"
+                        placeholder="First Name" required pattern="^[A-Za-z]+$" title="Only letters are allowed" />
+
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" id="lastname" name="lastname" value="{{user.last_name}}"
+                        placeholder="Last Name" required pattern="^[A-Za-z]+$" title="Only letters are allowed" />
+
+                </div>
+
+                <div class="form-group">
+                    <textarea placeholder="My Bio" class="form-control" id="bio" name="bio" row="5" maxlength="500" >{% if student.bio %}{{student.bio}}{% else %}{{none}}{% endif %}</textarea>
+                </div>
+
+                <div class="form-group">
+
+                </div>
+
+                <div class="row">
+
+                    <div class="form-group col col-md-4">
+                        <input type="text" class="form-control" value="{{student.whatsapp_number.split.0}}"
+                            id="countrycode" name="countrycode" placeholder="Country Code" required />
+                    </div>
+
+                    <div class="col">
+                        <div class="form">
+                            <input type="text" class="form-control" id="phone"
+                                value="{{student.whatsapp_number.split.1}}" name="phone" placeholder="Whatsapp Number"
+                                required pattern="^\[1-9][0-9]{9}$" />
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+                    <input type="email" class="form-control" id="email" name="email" value="{{user.email}}"
+                        placeholder="Email id" required />
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control" id="id_department" name="department">
+                        {% for d in department %}
+                        {% if d.department_name == student.department %}
+                        <option class="form-control" value="{{d.department_id }}" selected>{{student.department}}
+                        </option>
+                        {% else %}
+                        <option class="form-control" value="{{d.department_id}}"> {{d.department_name}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control" id="id_branch" name="branch">
+                        {% for b in branch %}
+                        {% if b.branch_code == student.branch.branch_code %}
+                        <option class="form-control" selected value="{{student.branch.branch_code}}">{{student.branch}}</option>
+                        {% else %}
+                        <option class="form-control" value="{{b.branch_code}}"> {{b.branch_name}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- checkbox -->
+                <div class="form-group">
+                    {% if student.show_number == 1 %}
+                    <input type="checkbox" class="form-control-checkbox" id="show_number" name="show_number" value="checked" checked />
+                    {% else %}
+                    <input type="checkbox" class="form-control-checkbox" id="show_number" name="show_number" value="none" />
+                    {% endif %}
+                    <label class="h4" for="show_number"> Show Whatsapp Number</label>
+                </div>
+
+
+                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                    class="btn btn-success" onclick=return true;>
+                    Update Profile
+                </button>
+            </div>
+
+
+        </div>
+    </form>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var departmentSelect = document.getElementById("id_department");
+        var branchSelect = document.getElementById("id_branch");
+
+        departmentSelect.addEventListener("change", function () {
+            var departmentName = departmentSelect.value;
+            if (departmentName) {
+                fetch(`http://127.0.0.1:8000/branch/${departmentName}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+
+                        branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+                        data.branches.forEach(function (value) {
+                            var option = document.createElement("option");
+                            option.value = value.branch_code;
+                            option.text = value.branch_name;
+                            branchSelect.appendChild(option);
+                        });
+
+                        branchSelect.disabled = false;
+                    })
+                    .catch(error => console.error(error));
+            }
+            else {
+                branchSelect.innerHTML = '<option value="" disabled selected>Select Branch</option>';
+                branchSelect.disabled = true;
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

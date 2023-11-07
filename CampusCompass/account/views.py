@@ -150,6 +150,97 @@ def confirm_email(request):
     messages.success(request, ('Your email confirmation is pending! Verify now'))
     return redirect('/')
 
+def profile(request):
+    username= request.user
+    if(username.__str__() != 'AnonymousUser'):
+        user= User.objects.get(username=username)
+        student = Student.objects.get(user=user)
+        SRN= student.student_id
+        # mentor = Mentor.objects.get(student_id=SRN)
+        # check if mentor
+        mentor=None
+        if(student.is_mentor):
+            mentor=Mentor.objects.get(username=username)
+        
+        context ={
+            'user':user,
+            'student':student,
+            'mentor':mentor,
+        }
+
+        return render(request, 'account/profile.html',context)
+    else:
+        messages.error(request,"Please sign in first")
+        return redirect('/account/login')
+
+def edit_profile(request):
+    username= request.user
+    if(username.__str__() != 'AnonymousUser'):
+        department=Department.objects.all()
+        user= User.objects.get(username=username)
+        student= Student.objects.get(user=user)
+        branch=Branch.objects.filter(department=student.department)
+
+        # print(branch)
+        # print(student.branch.branch_code)
+        context ={'department':department,'user':user,'student':student,'branch':branch}
+        return render(request, 'account/editprofile.html',context)
+    else:
+        messages.error(request,"Please sign in first")
+        return redirect('/account/login')
+
+def edit_profile_submit(request):
+    if request.method == 'POST':        
+        username = request.user.__str__()
+        first_name = request.POST.get('firstname',False)
+        last_name = request.POST.get('lastname',False)
+        bio=request.POST.get('bio',False)
+        show_number= request.POST.get('show_number',False)
+        country_code= request.POST.get('countrycode',False)
+        whatsappnumber = request.POST.get('phone',False)
+        email = request.POST.get('email',False)
+
+        branch = request.POST.get('branch',False)
+        department = request.POST.get('department',False)
+
+        whatsappno =country_code+" "+whatsappnumber
+
+        # trim + from country code if any
+        if (country_code[0] == "+"):
+            country_code = country_code[1:]
+        
+        whatsappnumber=country_code+whatsappnumber
+        
+        # generate whatsapp link
+        whatsapplink="https://api.whatsapp.com/send?phone="+whatsappnumber
+
+        if(show_number):
+            show_number=True
+        else:
+            show_number=False
+
+        # find user and update
+        user = User.objects.get(username=username)
+        user.first_name=first_name
+        user.last_name=last_name
+        user.email=email
+        user.save()
+
+        # find student and update
+        student= Student.objects.get(user=user)
+        student.department= Department.objects.get(department_id= department)
+        student.bio=bio
+        student.show_number= show_number
+        student.branch= Branch.objects.get(branch_code= branch)
+        student.whatsapp_number= whatsappno
+        student.whatsapp_link=whatsapplink
+        student.save()  
+
+        messages.success(request,"Profile Updated")
+        return redirect('/account/profile')     
+        
+    else:
+        pass
 
 class ActivateAccount(View):
 
