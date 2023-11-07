@@ -1,0 +1,184 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {{form.media}}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- link all css files and frameworks -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- <link href="{% static 'css/custom.css' %}" rel="stylesheet"> -->
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/collegeconnect.css' %}" />
+
+    <!-- title of the web page -->
+    <title>
+        Campus Compass : Navigating College Life Together
+    </title>
+</head>
+
+<body>
+    <!-- Fixed Navigation bar -->
+    <nav class="navbar nav fixed-top navbar-expand-lg navbar-light bg-dusky text-light">
+        <!-- Logo -->
+        <a class="navbar-brand text-light" href="/">
+            Campus Compass
+        </a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+            <li class="nav-item">
+                <a class="nav-link text-muted disabled">Navigating College Life Together...</a>
+            </li>
+
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <div class="topnav">
+
+                <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+
+                    <!-- Navigation Buttons -->
+                    <li class="nav-item button">
+                        <a class="nav-link text-light" aria-current="page" href="/post/feed">
+                            Feed
+                        </a>
+                    </li>
+
+                    <li class="nav-item button">
+                        <a class="nav-link text-light" href="/account/profile">My Profile</a>
+                    </li>
+
+                    <li class="nav-item button">
+                        <a class="nav-link text-light" href="/resource">Resources</a>
+                    </li>
+
+                    <li class="nav-item button">
+                        <a class="nav-link text-light" href="/announcement">Announcement</a>
+                    </li>
+                    <li class="nav-item button">
+                        <a class="nav-link text-light" href="/account/show_mentor">Find Mentors</a>
+                    </li>
+
+
+                    <li class="nav-item dropdown button ">
+                        <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdownMenuLink"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Join us
+                        </a>
+                        <div class="dropdown-menu bg-dusky" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item button" href="/account/register">Register</a>
+                            <a class="dropdown-item button" href="/account/login">Login</a>
+                            <a class="dropdown-item button" href="/about-us">About Us</a>
+                            <a class="dropdown-item button" href="/">Home</a>
+                            <a class="dropdown-item button" href="/contact-us">Contact Us</a>
+                            <!-- <a class="dropdown-item button" href="#"></a> -->
+                        </div>
+                    </li>
+
+
+                    <!-- <li class="nav-item button">
+                        <a class="nav-link text-light" href="/account/logout">Logout</a>
+
+                    </li> -->
+
+
+                    <!-- Search form -->
+                    <form class="d-flex">
+                        <input class="form-control me-2" type="text" placeholder="Search" aria-label="Search">
+                        <button style="border-radius:20px" class="btn btn-success text-light" type="submit">
+                            <i>
+                                <img src="{% static 'img\icons8-search-96.png' %}" width="30" alt="search" />
+                            </i>
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+        </ul>
+    </nav>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    {% if messages %}
+    {% for message in messages %}
+    {% if message.tags == 'success'%}
+    <div class="alert" style="background-color: green; color: rgb(255, 255, 255);">
+        <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+        {{message}}
+    </div>
+    {% elif message.tags == 'info'%}
+    <div class="alert" style="background-color: rgb(209, 209, 95); color: black;">
+        <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+        {{message}}
+    </div>
+    {% elif message.tags == 'warning'%}
+    <div class="alert" style="background-color: rgb(255, 145, 0); color: white;">
+        <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+        {{message}}
+    </div>
+    {% elif message.tags == 'error'%}
+    <div class="alert" style="background-color: red; color: white;">
+        <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+        {{message}}
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+
+    <!-- Block Content -->
+    {% block content %}
+    <!--enter your html code here-->>
+    {% endblock %}
+
+    <!-- Fixed Footer -->
+    <nav class="navbar fixed-bottom navbar-light bg-dusky"> <!-- fixed-bottom -->
+
+        <li class="nav-item">
+            <a class="navbar-brand text-muted" href="/copyright">&copy; Copyright 2023</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="navbar-brand text-muted" href="/">Campus Compass : Navigating College Life Together</a>
+        </li>
+
+
+        <li class="nav-item">
+            <a class="navbar-brand text-light bg-primary" style="padding: 5px;" href="/contact-us">Contact Us</a>
+        </li>
+
+    </nav>
+
+
+    <!-- Javascript files -->
+    <script src="{% static 'js\collegeconnect.js' %}"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+
+    <!-- popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+
+    <!-- bootstrap.min.js -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>
