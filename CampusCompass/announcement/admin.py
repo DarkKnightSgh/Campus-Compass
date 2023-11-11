@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib import admin
 from .models import Announcement
 
-class AnnoncementAdmin(admin.ModelAdmin):
+class AnnouncementAdmin(admin.ModelAdmin):
     list_display=[
         'title',
         'content',
@@ -31,4 +31,4 @@ class AnnoncementAdmin(admin.ModelAdmin):
     list_branch.short_description = "branches"  # Set a custom column header for the domains
 
 
-admin.site.register(Announcement,AnnoncementAdmin)
+admin.site.register(Announcement,AnnouncementAdmin)
