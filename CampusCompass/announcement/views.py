@@ -13,12 +13,12 @@ from .forms import AnnouncementForm
 
 # import login required
 from django.contrib.auth.decorators import login_required
-from account.decorator import club_head_or_social_media_manager_required
+from account.decorator import club_head_required
 
 # Create your views here.
 
 @login_required(login_url='/account/login')
-@club_head_or_social_media_manager_required 
+@club_head_required 
 def create(request):
     if request.method == 'POST':
         form = AnnouncementForm(request.POST, request.FILES)
