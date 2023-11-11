@@ -29,3 +29,6 @@ class AnnoncementAdmin(admin.ModelAdmin):
         return ', '.join(b.branch_name for b in branch)
 
     list_branch.short_description = "branches"  # Set a custom column header for the domains
+
+
+admin.site.register(Announcement,AnnoncementAdmin)

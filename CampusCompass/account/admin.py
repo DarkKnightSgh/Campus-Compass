@@ -111,6 +111,7 @@ class ClubMemberAdmin(admin.ModelAdmin):
         'user',
         'club',
         'club_head',
+        'social_media_manager',
         'joined_on',
     )
 
@@ -122,10 +123,12 @@ class ClubMemberAdmin(admin.ModelAdmin):
     list_filter=[
         'club',
         'club_head',
+        'social_media_manager',
     ]
 
     list_editable=[
         'club_head',
+        'social_media_manager',
     ]
 
 admin.site.register(Student,StudentAdmin)

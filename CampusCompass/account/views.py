@@ -357,4 +357,33 @@ def show_mentors_by_domain(request,domain):
     context={'mentors':mentors}
     return render(request, 'account/show_mentor.html',context)
 
+@club_head_required
+def approve_membership(request):
+    if request.method == 'POST':
+        srn = request.POST.get('srn',False)
+        social_media_manager = request.POST.get('social_media_manager',False)
+        username = request.user.__str__()
+        club = which_club_head(username)
+        club_head = User.objects.get(username=username)
+        print(club)
+        club = Club.objects.get(club_name=club)
+        if (Student.objects.filter(student_id=srn).exists()):
+            s = Student.objects.get(student_id=srn)
+            print(s.user)
+            if(ClubMember.objects.filter(user=s.user,club=club).exists()):
+                c=ClubMember.objects.get(user=s.user,club=club)
+            else:
+                c=ClubMember()
+            c.user= s.user
+            c.club=club
+            if(social_media_manager):
+                c.social_media_manager=True
+            c.save()
+            return redirect('/account/profile')
+        else:
+            messages.error("Student not present in our system")
+            return redirect('/account/approve_membership')
 
+        
+    context = {}
+    return render(request, 'account/approve_membership.html', context)

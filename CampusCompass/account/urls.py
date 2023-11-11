@@ -15,6 +15,7 @@ urlpatterns= [
     path('profile',views.profile,name="profile"),
     path('edit_profile',views.edit_profile,name="edit_profile"),
     path('edit_profile_submit',views.edit_profile_submit,name="edit_profile_submit"),
+    path('approve_membership', views.approve_membership, name='approve_membership'),
 
     # email confirmation and auth
     path('confirm_email',views.confirm_email,name="email_confirm"),
