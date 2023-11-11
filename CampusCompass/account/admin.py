@@ -78,6 +78,57 @@ class MentorAdmin(admin.ModelAdmin):
 
     list_domains.short_description = "Domains"  # Set a custom column header for the domains
 
+class ClubAdmin(admin.ModelAdmin):
+    list_display= (
+        'club_name',
+        'club_desc',
+        # 'list_branch',
+    )
+
+    search_fields=[
+        'branch',
+        'club_name',
+        'club_desc',
+    ]
+
+    list_filter=[
+        'branch',
+    ]
+
+    list_editable=[
+        'club_desc',   
+    ]
+
+    def list_branch(self, obj):
+        # Retrieve the list of domain tags for the mentor and return them as a string
+        branch = obj.branch.all()  # Assuming 'domain' is the name of the TaggableManager field
+        return ', '.join(b.branch_name for b in branch)
+
+    list_branch.short_description = "branches"  # Set a custom column header for the domains
+
+class ClubMemberAdmin(admin.ModelAdmin):
+    list_display= (
+        'user',
+        'club',
+        'club_head',
+        'joined_on',
+    )
+
+    search_fields=[
+        'user',
+        'club',
+    ]
+
+    list_filter=[
+        'club',
+        'club_head',
+    ]
+
+    list_editable=[
+        'club_head',
+    ]
 
 admin.site.register(Student,StudentAdmin)
 admin.site.register(Mentor,MentorAdmin)
+admin.site.register(Club,ClubAdmin)
+admin.site.register(ClubMember,ClubMemberAdmin)
