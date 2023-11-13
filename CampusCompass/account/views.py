@@ -27,6 +27,7 @@ from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import View
 
+from .decorator import *
 
 
 
