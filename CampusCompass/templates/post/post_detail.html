@@ -37,8 +37,8 @@
                 <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
                     class="btn btn-danger">Edit Post</button>
             </a>
-            <a href="/post/delete_post/{{post.slug}}">
-                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+            <a id="delete-button" href="/post/delete_post/{{post.slug}}">
+                <button  type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
                     class="btn btn-danger">Delete Post</button>
             </a>
             {% endif %}

@@ -539,3 +539,133 @@ class PostDetailAndCommentSeleniumTest(StaticLiveServerTestCase):
         # Check that the comment was added
         body = self.browser.find_element(By.TAG_NAME, 'body')
         self.assertIn('Test Comment', body.text)
+        
+        
+class DeletePostSeleniumTest(StaticLiveServerTestCase):
+    def setUp(self):
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))  
+        self.user = User.objects.create_user(username='testuser', password='12345',email="test@example.com")
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.student = Student.objects.create(student_id="PES12736437",
+                                              user=self.user,
+                                              department=self.department,
+                                              branch=self.branch,
+                                              whatsapp_number="+91992636672",
+                                              year_of_passing_out=2024,
+                                            )
+        self.post = Post.objects.create(
+            title='Test Post', 
+            content ="test data",
+            user = self.user,
+            slug="test-post",
+        )
+        self.tag = Tag.objects.create(name='Test Tag')
+        
+        self.post.tags.add(self.tag)
+        self.post.branch.add(self.branch)
+        self.browser.set_page_load_timeout(120)
+    
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_delete_post(self):
+        # Log in
+        self.browser.get(self.live_server_url + '/account/login')
+        username_input = self.browser.find_element(By.NAME,"username")
+        password_input = self.browser.find_element(By.NAME,"password")
+        username_input.send_keys('testuser')
+        password_input.send_keys('12345')
+        password_input.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.browser, 2).until(
+            EC.url_to_be(self.live_server_url + '/account/profile')
+        )
+
+        # Navigate to the post detail page
+        self.browser.get(self.live_server_url + '/post/' + self.post.slug)
+
+        # Click the delete button
+        delete_button = self.browser.find_element(By.ID, 'delete-button')
+        delete_button.click()
+
+        # Wait for the page to reload
+        WebDriverWait(self.browser, 2).until(
+            EC.url_to_be(self.live_server_url + '/post/feed')
+        )
+
+        # Check that the post was deleted
+        with self.assertRaises(Post.DoesNotExist):
+            Post.objects.get(slug=self.post.slug)
+            
+
+class EditPostSeleniumTest(StaticLiveServerTestCase):
+    def setUp(self):
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))  
+        self.user = User.objects.create_user(username='testuser', password='12345',email="test@example.com")
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.student = Student.objects.create(student_id="PES12736437",
+                                              user=self.user,
+                                              department=self.department,
+                                              branch=self.branch,
+                                              whatsapp_number="+91992636672",
+                                              year_of_passing_out=2024,
+                                            )
+        self.post = Post.objects.create(
+            title='Test Post', 
+            content ="test data",
+            user = self.user,
+            slug="test-post",
+        )
+        self.tag = Tag.objects.create(name='Test Tag')
+        
+        self.post.tags.add(self.tag)
+        self.post.branch.add(self.branch)
+        self.browser.set_page_load_timeout(100)
+    
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_edit_post(self):
+        # Log in
+        self.browser.get(self.live_server_url + '/account/login')
+        username_input = self.browser.find_element(By.NAME,"username")
+        password_input = self.browser.find_element(By.NAME,"password")
+        username_input.send_keys('testuser')
+        password_input.send_keys('12345')
+        password_input.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.browser, 2).until(
+            EC.url_to_be(self.live_server_url + '/account/profile')
+        )
+
+        # Navigate to the post edit page
+        self.browser.get(self.live_server_url + '/post/edit_post/' + self.post.slug)
+
+        # Fill in the form with new data
+        content_input = self.browser.find_element(By.ID, 'id_content')
+        ckeditor_id = content_input.get_attribute('id')
+        
+        WebDriverWait(self.browser, 5).until(
+            lambda driver: driver.execute_script('return typeof CKEDITOR !== "undefined" && CKEDITOR.instances["{}"] !== undefined;'.format(ckeditor_id))
+        )
+        self.browser.execute_script("CKEDITOR.instances['{}'].setData('{}');".format(ckeditor_id, 'Updated Content'))
+        
+        title_input = self.browser.find_element(By.NAME, 'title')
+        title_input.clear()
+        title_input.send_keys('Updated Post')
+
+
+        # Submit the form
+        title_input.submit()
+
+        # Wait for the page to reload
+        WebDriverWait(self.browser, 2).until(
+            EC.url_to_be(self.live_server_url + '/post/feed')
+        )
+
+        # Check that the post was updated
+        post = Post.objects.get(post_id=self.post.post_id)
+        self.assertEqual(post.title, 'Updated Post')
+        self.assertEqual(post.content, '<p>Updated Content</p>')
