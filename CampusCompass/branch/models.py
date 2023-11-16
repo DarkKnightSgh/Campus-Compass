@@ -3,8 +3,9 @@ from django.db import models
 # Create your models here.
 
 class Department(models.Model):
-    department_name= models.CharField(max_length=500,null=True, blank= True)
+    department_name= models.CharField(max_length=500,null=True, blank= True,unique=True)
     department_id= models.BigAutoField(primary_key=True, auto_created=True)
+
     def __str__(self):
         return self.department_name
 
