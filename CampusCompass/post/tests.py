@@ -116,9 +116,89 @@ class MakePostViewTest(TestCase):
         self.assertTrue('form' in response.context)
         
 
+class DeletePostTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.post = Post.objects.create(title='Test Post', content='Test Content', user=self.user, slug='test-post')
+
+    def test_delete_post(self):
+        # Log in
+        self.client.login(username='testuser', password='12345')
+
+        # Delete the post
+        response = self.client.post(reverse('delete_post', kwargs={'slug': 'test-post'}))
+
+        # Check that the response has a status code of 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+
+        # Check that the post was deleted
+        with self.assertRaises(Post.DoesNotExist):
+            Post.objects.get(slug='test-post')
+        
+        # check if post exists
+        self.assertFalse(Post.objects.filter(slug='test-post').exists())
+
+    def tearDown(self):
+        # Log out
+        self.client.logout()
+        
+
+
+class EditPostTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch',department=self.department)
+        self.new_branch = Branch.objects.create(branch_name='New Test Branch',department=self.department)
+        self.post = Post.objects.create(
+            user=self.user,
+            title='Test Post',
+            slug='test-post',
+            content='This is a test post.',
+            author='Test Author',
+            
+        )
+        self.post.branch.add(self.branch)
+        
+        self.comment = PostComment.objects.create(
+            user=self.user,
+            comment='This is a test comment.',
+            post=self.post,
+        )
+
+    def test_edit_post(self):
+        # Log in
+        self.client.login(username='testuser', password='12345')
+
+        # Edit the post
+        response = self.client.post(reverse('edit_post', kwargs={'slug': self.post.slug}), {
+            'title': 'Updated Post',
+            'content': 'Updated Content',
+            'branch': [self.new_branch.branch_code],
+            'tags': 'updatedtag',
+        })
+
+        # Check that the response has a status code of 302 (redirect)
+        self.assertEqual(response.status_code, 302)
+
+        # Check that the post was updated
+        post = Post.objects.get(post_id=self.post.post_id)
+        self.assertEqual(post.title, 'Updated Post')
+        self.assertEqual(post.content, 'Updated Content')
+        self.assertIn(self.branch, post.branch.all())
+        self.assertIn('updatedtag', [tag.name for tag in post.tags.all()])
+
+    def tearDown(self):
+        # Log out
+        self.client.logout()
+        
+
 class MakePostViewSeleniumTest(LiveServerTestCase):
     def setUp(self):
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))  # replace with the Chrome webdriver
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install())) 
+        Branch.objects.all().delete()
         self.user = User.objects.create_user(username='testuser', password='12345',email="test@example.com")
         self.department = Department.objects.create(department_name="test_dept")
         self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
@@ -157,7 +237,8 @@ class MakePostViewSeleniumTest(LiveServerTestCase):
         tags_input.send_keys('test, post')
         
         branch_code = str(int(self.branch.branch_code)-1)
-        branch_checkbox_id = f"id_branch_{branch_code}"
+        # branch_checkbox_id = f"id_branch_{branch_code}"
+        branch_checkbox_id = f"id_branch_0"
         branch_checkbox = self.browser.find_element(By.ID, branch_checkbox_id)
         
         
