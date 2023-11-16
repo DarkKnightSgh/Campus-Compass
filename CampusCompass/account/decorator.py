@@ -75,6 +75,16 @@ def social_media_manager_required(view_func):
             return redirect('/error404')
     return wrapper_func
 
+def club_head_or_social_media_manager_required(view_func):
+    def wrapper_func(request,*args,**kwargs):
+        if is_club_head(request.user.__str__()) or is_social_media_manager(request.user.__str__()):
+            return view_func(request,*args,**kwargs)
+        else:
+            # message
+            messages.error(request,"You are not authorized to access this page!! Only Club heads and social media managers allowed")
+            return redirect('/error404')
+    return wrapper_func
+
 def is_club_member(username):
     try:
         user=User.objects.get(username=username)
@@ -92,3 +102,5 @@ def which_club_member(username):
     except Exception as e:
         print(e)
         return False
+
+
