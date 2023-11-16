@@ -22,6 +22,50 @@ def create_slug(username,title):
     slug = re.sub(r'\s', '-', slug)
     return slug
 
+@login_required(login_url='/account/login')
+def make_post(request):
+    username=request.user.__str__()
+    
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            # get branches
+            branches = form.cleaned_data['branch']
+            # get tags
+            tags = form.cleaned_data['tags']
+            print(branches,tags)
+            # get title
+            title = form.cleaned_data['title']
+
+            # create slug
+            slug = create_slug(username,title)
+
+            post = form.save(commit=False)
+            post.user = User.objects.get(username=username)
+            post.author = post.user.first_name+" "+post.user.last_name
+            post.slug = slug
+            post.save()
+            # add branches
+            for branch in branches:
+                post.branch.add(branch)
+            # add tags
+            for tag in tags:
+                tag = tag.strip().lower()
+                domain, created = Tag.objects.get_or_create(name=tag)
+                post.tags.add(tag)
+            messages.success(request, "Post successfully created!")
+            return redirect("/post/feed")
+        else:
+            messages.error(request, "Error in form submission. Please correct the errors below.")
+    
+    form = PostForm()    
+    # print("Hello")
+    context={
+        'form':form
+    }
+    return render(request,'post/make_post.html',context)
+
+
 
 @login_required(login_url='/account/login')
 def edit_post(request,slug):
@@ -153,3 +197,13 @@ def post_detail(request,slug=None):
         messages.error(request, "No post found")
         return redirect("/error404")
 
+@login_required(login_url='/account/login')
+def delete_post(request,slug=None):
+    # find
+    post=Post.objects.get(slug=slug)
+
+    # delete
+    post.delete()
+    messages.success(request, "Post successfully deleted!")
+
+    return redirect("/post/feed")
