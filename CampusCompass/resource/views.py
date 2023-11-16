@@ -18,6 +18,8 @@ from django.http import HttpResponse
 login_required(login_url='/account/login')
 def resource(request):
     username=request.user.__str__()
+    if(username=='AnonymousUser'):
+        return redirect("/account/login")
     print(request.user.student.branch)
     user_branch = request.user.student.branch 
     # Filter resources by the user's branch

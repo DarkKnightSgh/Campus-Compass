@@ -30,8 +30,8 @@ urlpatterns = [
     path('', include('home.urls')),
     path('account/', include('account.urls')),
     path('post/', include('post.urls')),
-    # path('announcement/', include('announcement.urls')),
-    # path('resource/', include('resource.urls')),
+    path('announcement/', include('announcement.urls')),
+    path('resource/', include('resource.urls')),
     path('branch/', include('branch.urls')),
 
 ]

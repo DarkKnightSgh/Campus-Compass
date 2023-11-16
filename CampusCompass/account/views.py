@@ -143,65 +143,7 @@ def logout(request):
     return redirect('/')
 
 
-# def profile(request):
-#     username= request.user
-#     if(username.__str__() != 'AnonymousUser'):
-#         user= User.objects.get(username=username)
-#         student = Student.objects.get(user=user)
-#         SRN= student.student_id
-#         # mentor = Mentor.objects.get(student_id=SRN)
-#         # check if mentor
-#         mentor=None
-#         if(student.is_mentor):
-#             mentor=Mentor.objects.get(username=username)
-        
-#         club_head=False
-#         if(is_club_head(username)):
-#             club_head=True
-        
-#         social_media_manager=False
-#         if(is_social_media_manager(username)):
-#             social_media_manager=True
-
-#         club_member=False
-#         if(is_club_member(username)):
-#             club_member=True
-        
-#         # check which clubs user is in
-#         club_member=ClubMember.objects.filter(user=user)
-#         club_list=[clb for clb in Club.objects.all()]
-#         club=[club.club_name for club in club_list]
-
-#         # Filter posts by the user's branch
-#         post = Post.objects.filter(user=user)
-
-#         # sort wrt to most recent
-#         post = post.order_by('-created_at')
-
-#         resource = Resource.objects.filter(user=user)
-#         resource = resource.order_by('-uploaded_at')
-
-        
-#         context ={
-#             'user':user,
-#             'student':student,
-#             'mentor':mentor,
-#             'club_head':club_head,
-#             'social_media_manager':social_media_manager,
-#             'club_member':club_member,
-#             'clubs':club,
-#             'post':post,
-#             'resources':resource,
-
-#         }
-
-#         return render(request, 'account/profile.html',context)
-#     else:
-#         messages.error(request,"Please sign in first")
-#         return redirect('/account/login')
-
-
-# with joins
+@login_required(login_url='/account/login')
 def profile(request):
     username = request.user
     if username.is_anonymous:
@@ -258,7 +200,7 @@ def profile(request):
         messages.error(request, "User profile not found.")
         return redirect('/account/login')
 
-
+@login_required(login_url='/account/login')
 def profile_user(request,username):
     who=request.user.__str__()
     if(who=="AnonymousUser"):
@@ -314,10 +256,12 @@ def profile_user(request,username):
         messages.error(request, "User profile not found.")
         return redirect('/account/login')
 
+@login_required(login_url='/account/login')
 def change_password(request):
     context ={}
     return render(request, 'account/change_password.html',context)
 
+@login_required(login_url='/account/login')
 def edit_profile(request):
     username= request.user
     if(username.__str__() != 'AnonymousUser'):
@@ -334,6 +278,7 @@ def edit_profile(request):
         messages.error(request,"Please sign in first")
         return redirect('/account/login')
 
+@login_required(login_url='/account/login')
 def edit_profile_submit(request):
     if request.method == 'POST':        
         username = request.user.__str__()
@@ -438,7 +383,7 @@ def can_apply_again(mentor):
         mentor.last_application_date = None
         mentor.save()
 
-
+@login_required(login_url='/account/login')
 def mentor_registration(request):
     username=request.user.__str__()
     if(username=="AnonymousUser"):
@@ -490,6 +435,7 @@ def mentor_registration(request):
         context['mentor']=mentor
     return render(request, 'account/mentor_registration.html',context)  # Render the form again if it's a GET request
 
+@login_required(login_url='/account/login')
 def show_mentor(request):
     # get all mentors of branch
     username= request.user.__str__()
@@ -516,6 +462,7 @@ def show_mentors_by_domain(request,domain):
     return render(request, 'account/show_mentor.html',context)
 
 
+@login_required(login_url='/account/login')
 @club_head_required
 def approve_membership(request):
     if request.method == 'POST':
