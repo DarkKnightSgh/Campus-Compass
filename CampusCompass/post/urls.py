@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns= [
     path('feed', views.feed,name= 'feed'),
-    path('feed_top_comments', views.feed_top_comments,name= 'feed_top_comments'),
     path('make_post',views.make_post,name='make_post'),
     path('edit_post/<slug>',views.edit_post,name='edit_post'),
     path('<slug>',views.post_detail,name='post_detail'),    

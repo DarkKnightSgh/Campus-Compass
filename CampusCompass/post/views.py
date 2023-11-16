@@ -87,6 +87,8 @@ def feed(request):
             .values('count')[:1]
         )
     )
+    context={'post':posts,"name":"My Feed"}
+    return render(request, 'post/feed.html',context)
 
 
 # create an api call to add comments
@@ -106,8 +108,7 @@ def add_comment(request,slug=None):
 
         
 
-    context={'post':posts,"name":"My Feed"}
-    return render(request, 'post/feed.html',context)
+    
 
 @login_required(login_url='/account/login')
 def tag_post(request,slug):
@@ -134,5 +135,21 @@ def tag_post(request,slug):
         return render(request, 'post/feed.html',context)
     except:
         messages.error(request, "No posts found for this tag.")
+        return redirect("/error404")
+
+
+@login_required(login_url='/account/login')
+def post_detail(request,slug=None):
+    username=request.user.__str__()
+    try:    
+        post=Post.objects.get(slug=slug)   
+        # get comments
+        comments = PostComment.objects.filter(post=post) 
+        comments = comments.order_by('-created_at')
+
+        context={'post':post,'comments':comments}
+        return render(request,'post/post_detail.html',context)
+    except:
+        messages.error(request, "No post found")
         return redirect("/error404")
 
