@@ -80,6 +80,64 @@ def upload_resource(request):
     return render(request, 'resource/upload_resource.html', {'form': form,"name":"Upload Resources"})
 
 login_required(login_url='/account/login')
+def edit_resource(request,id=None):
+    username=request.user.__str__()
+    # get resource
+    resource = Resource.objects.get(id=id)
+    # get user
+    user=User.objects.get(username=username)
+
+    if request.method == 'POST':
+        form = ResourceForm(request.POST, request.FILES)
+        if form.is_valid() and resource.user==user:
+            # get branches
+            branches = form.cleaned_data['branch']
+            # get tags
+            tags = form.cleaned_data['tags']
+            print(branches,tags)
+            
+            resource.title = form.cleaned_data['title']
+            # check if files
+            if form.cleaned_data['files']:
+                resource.files = form.cleaned_data['files']
+            resource.save()
+            for branch in branches:
+                resource.branch.add(branch)
+            resource.tags.clear()
+            for tag in tags:
+                tag = tag.strip().lower()
+                domain, created = Tag.objects.get_or_create(name=tag)
+                resource.tags.add(tag)
+
+            messages.success(request, "Resource successfully updated!")
+            return redirect('/resource')
+        else:
+             # Check if 'files' field is empty
+            if 'files' not in form.cleaned_data:
+                branches = form.cleaned_data['branch']
+                # get tags
+                tags = form.cleaned_data['tags']
+                # No new file provided, retain the existing file
+                resource.title = form.cleaned_data['title']
+                resource.save()
+                for branch in branches:
+                    resource.branch.add(branch)
+                resource.tags.clear()
+                for tag in tags:
+                    tag = tag.strip().lower()
+                    domain, created = Tag.objects.get_or_create(name=tag)
+                    resource.tags.add(tag)
+
+                messages.success(request, "Resource successfully updated!")
+                return redirect('/resource')
+            else:
+                messages.error(request, "Error in form submission. Please correct the errors below.")
+
+    else:
+        form = ResourceForm(instance=resource)
+    return render(request, 'resource/upload_resource.html', {'form': form,"name":"Edit Resources"})
+
+login_required(login_url='/account/login')
 def delete_resource(request,id=None):
     username=request.user.__str__()
     # get resource
