@@ -13,6 +13,29 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import auth
 from branch.models import Department,Branch
 from taggit.managers import TaggableManager
+
+from django.db.models import Q
+
+class StudentQuerySet(models.QuerySet):
+    def search(self, query=None):
+        qs = self
+        if query is not None:
+            or_lookup = (
+                Q(student_id__icontains=query) | 
+                Q(bio__icontains=query) |
+                Q(user__username__icontains=query) |
+                Q(user__email__icontains=query) |
+                Q(college_email__icontains=query) |
+                Q(whatsapp_number__icontains=query) |
+                Q(year_of_passing_out__icontains=query)
+            )
+            qs = qs.filter(or_lookup).distinct().only(
+                'student_id', 'bio', 'user__username', 'college_email',
+                'whatsapp_number', 'whatsapp_link', 'email_confirmed',
+                'is_mentor', 'show_number', 'year_of_passing_out'
+            )  # Add more fields as needed
+        return qs
+
 # Create your models here.
 
 class Student(models.Model):
@@ -28,13 +51,20 @@ class Student(models.Model):
     is_mentor= models.BooleanField(default=False)
     show_number=models.BooleanField(default=False) # choice for users to show their chat option
     year_of_passing_out= models.IntegerField(null=True,blank=True)
+    objects = StudentQuerySet.as_manager()
+
     def __str__(self):
         return self.user.username
+    def get_model_name(self):
+        return 'Student'
+
+    
+
 
 
 class Mentor(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE,related_name='mentor')
-    username= models.CharField(max_length=300,blank=False,null=False,default="AnonymousUser")
+    # username= models.CharField(max_length=300,blank=False,null=False,default="AnonymousUser")
     resume= models.FileField(upload_to='resume/')
     domain= TaggableManager()
     description= models.CharField(max_length=5000,null=True, blank= True)
@@ -57,7 +87,7 @@ class Mentor(models.Model):
     def send_approval_mail(self):
         # seven_day_ago=timezone.now() - timezone.timedelta(days=7)
         if self.approved:
-            u=User.objects.get(username=self.username)
+            u=User.objects.get(username=self.student.user.username)
             print("hello")
             email_from = settings.EMAIL_HOST_USER
             subject = 'Mentor Application Approved'
@@ -71,7 +101,7 @@ class Mentor(models.Model):
             except Exception as e:
                 print(f"Email sending failed: {e}")
         else:
-            u=User.objects.get(username=self.username)
+            u=User.objects.get(username=self.student.user.username)
             email_from = settings.EMAIL_HOST_USER
             subject = 'Removed as Mentor'
             message = 'Sorry '+ u.first_name+" "+ u.last_name +', You can no longer mentor students at our platform College Connect.'
@@ -87,8 +117,10 @@ class Mentor(models.Model):
   
 @receiver(pre_save, sender=Mentor) # a trigger that's run everytime 
 def Mentor_pre_save(sender, instance, **kwargs):
-    instance.set_ismentor()
-    instance.send_approval_mail()
+    if instance.pk is not None:
+        instance.set_ismentor()
+        instance.send_approval_mail()
+
 
 class Club(models.Model):
     club_name= models.CharField(max_length=200,unique=True)
@@ -98,7 +130,7 @@ class Club(models.Model):
     branch= models.ManyToManyField(Branch)
     def __str__(self):
         return self.club_name
-    
+
 class ClubMember(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     club=models.ForeignKey(Club,on_delete=models.CASCADE,blank=True,null=True)
@@ -107,3 +139,4 @@ class ClubMember(models.Model):
     joined_on = models.DateTimeField(auto_now_add=True,null=True, blank=True)
     def __str__(self):
         return self.user.username + " (" + self.club.club_name +")"
+
