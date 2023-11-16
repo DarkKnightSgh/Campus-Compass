@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import auth
 from .models import Post, PostComment, Branch,Department
 from account.models import Student
+from taggit.models import Tag
 
 from .forms import PostForm
 
@@ -124,10 +125,7 @@ class MakePostViewSeleniumTest(LiveServerTestCase):
                                               whatsapp_number="+91992636672",
                                               year_of_passing_out=2024,
                                             )
-        # Log in the test user
-        self.client.login(username='testuser', password='12345')
-        print(self.live_server_url)
-
+        self.browser.set_page_load_timeout(30)
 
     def tearDown(self):
         self.browser.close()
@@ -141,7 +139,7 @@ class MakePostViewSeleniumTest(LiveServerTestCase):
         password_input.send_keys('12345')
         password_input.send_keys(Keys.RETURN)
         
-        WebDriverWait(self.browser, 1).until(
+        WebDriverWait(self.browser, 2).until(
             EC.url_to_be(self.live_server_url + '/account/profile')  
         )
 
@@ -170,3 +168,78 @@ class MakePostViewSeleniumTest(LiveServerTestCase):
         
         
         self.assertTrue(Post.objects.filter(title='Test Post').exists())
+        
+
+class PostViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.student = Student.objects.create(student_id="PES12736437",
+                                              user=self.user,
+                                              department=self.department,
+                                              branch=self.branch,
+                                              whatsapp_number="+91992636672",
+                                              year_of_passing_out=2024,
+                                            )
+        self.post = Post.objects.create(
+            title='Test Post', 
+            content ="test data",
+            user = self.user,
+            slug="test-post",
+        )
+        self.tag = Tag.objects.create(name='Test Tag')
+        
+        self.post.tags.add(self.tag)
+        self.post.branch.add(self.branch)
+
+    def test_feed_view(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse('feed'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Post')
+
+    def test_add_comment_view(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.post(reverse('comment_on_post', args=[self.post.slug]), {'comment': 'Test Comment'})
+        self.assertEqual(response.status_code, 302)  # Expecting a redirect
+        self.assertTrue(PostComment.objects.filter(comment='Test Comment').exists())
+
+    def test_tag_post_view(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse('tag_post', args=[self.tag.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Post')
+
+class PostDetailViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='testuser', password='12345')
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.student = Student.objects.create(student_id="PES12736437",
+                                              user=self.user,
+                                              department=self.department,
+                                              branch=self.branch,
+                                              whatsapp_number="+91992636672",
+                                              year_of_passing_out=2024,
+                                            )
+        self.post = Post.objects.create(
+            title='Test Post', 
+            content ="test data",
+            user = self.user,
+            slug="test-post",
+        )
+        self.tag = Tag.objects.create(name='Test Tag')
+        
+        self.post.tags.add(self.tag)
+        self.post.branch.add(self.branch)
+        self.comment = PostComment.objects.create(user=self.user, post=self.post, comment='Test Comment')
+
+    def test_post_detail_view(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(reverse('post_detail', args=[self.post.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Post')
+        self.assertContains(response, 'Test Comment')
