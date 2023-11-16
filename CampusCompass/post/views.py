@@ -65,3 +65,74 @@ def edit_post(request,slug):
         'form':form
     }
     return render(request,'post/edit_post.html',context)
+
+
+@login_required(login_url='/account/login')
+def feed(request):
+    username=request.user.__str__()
+    # print(request.user.student.branch)
+    user_branch = request.user.student.branch 
+    # Filter posts by the user's branch
+    post = Post.objects.filter(branch=user_branch)
+
+    # sort wrt to most recent
+    post = post.order_by('-created_at')
+    
+    # Annotate each post with its comment count using a subquery
+    posts = post.annotate(
+        comment_count=Subquery(
+            PostComment.objects.filter(post_id=OuterRef('post_id'))
+            .values('post_id')
+            .annotate(count=Count('comment_id'))
+            .values('count')[:1]
+        )
+    )
+
+
+# create an api call to add comments
+@login_required(login_url='/account/login')
+def add_comment(request,slug=None):
+    username=request.user.__str__()
+    if request.method == 'POST':
+        comment = request.POST.get('comment')
+        post = Post.objects.get(slug=slug)
+        c = PostComment()
+        c.user=request.user
+        c.comment=comment
+        c.post=post
+        c.save()
+        messages.success(request, "Comment successfully added!")
+        return redirect("/post/"+slug)
+
+        
+
+    context={'post':posts,"name":"My Feed"}
+    return render(request, 'post/feed.html',context)
+
+@login_required(login_url='/account/login')
+def tag_post(request,slug):
+    username=request.user.__str__()
+    try:
+        # get tag
+        tag = Tag.objects.get(slug=slug)
+        # get posts
+        post = Post.objects.filter(tags__name__in=[tag])
+        # sort wrt to most recent
+        post = post.order_by('-created_at')
+        
+        # Annotate each post with its comment count using a subquery
+        posts = post.annotate(
+            comment_count=Subquery(
+                PostComment.objects.filter(post_id=OuterRef('post_id'))
+                .values('post_id')
+                .annotate(count=Count('comment_id'))
+                .values('count')[:1]
+            )
+        )
+
+        context={'post':posts,"name":"Tag: "+tag.name}
+        return render(request, 'post/feed.html',context)
+    except:
+        messages.error(request, "No posts found for this tag.")
+        return redirect("/error404")
+

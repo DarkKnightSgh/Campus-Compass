@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block metatags %}
+<title>Feed : College Connect</title>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="text-right">{{name}}</h1>
+        </div>
+        <div class="col-md-2">
+            <a href="/post/make_post">
+                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                    class="btn btn-success">Create New Post</button>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="/post/feed_top_comments">
+                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                    class="btn btn-success">Show Top Posts</button>
+            </a>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+
+        {% for p in post %}
+        <!-- repeatable card -->
+        <div class="card">
+            <a class="feed-link" class="text-light" style="text-decoration:none;color:burlywood"
+                href="/post/{{p.slug}}">
+
+                <div class="row text-light container">
+                    <div class="col-md-10">
+                        <h1>{{p.title}}</h1>
+                    </div>
+                    <div class="col-md-2">
+                        <h3>{{p.user}}</h3>
+                        <p class="text-medium text-muted">{{p.created_at}}<br>Comment Count: {{ p.comment_count }}</p>
+                        <span>Tags: </span>
+                        {% for t in p.tags.all %}
+                            <span class="text-medium text-muted">
+                            {{t.name}}, 
+                            </span >
+                        {% endfor %}
+                    </div>
+                </div>
+            </a>
+
+            <div class="post-content">
+                {{p.content | safe}}
+            </div>
+
+            <div class="text-center" style="padding:10px">
+                <a href="/post/{{p.slug}}" class="bg-charcoal-black">
+                    Read More
+                </a><br>
+                {% if p.user == user %}
+                <a href="/post/edit_post/{{p.slug}}">Edit Post</a>
+                {% endif %}
+            </div>
+
+            <form class="text-center comment-card" method="post" action="/post/add-comment/{{p.slug}}">
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <div class="col-md-10">
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="comment" name="comment"
+                                placeholder="Add your comment here ..." />
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" style="width:90%;padding:20px;margin:25px;border-radius:20px"
+                            class="btn btn-success">Comment</button>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    function removeImgTags(text) {
+        // Use a regular expression to match and remove <img> tags
+        var regex = /<img[^>]*>/g;
+
+        // Replace the matched <img> tags with an empty string
+        return text.replace(regex, '');
+    }
+
+    function removeHtmlTagsKeepP(text) {
+        // Use a regular expression to match all HTML tags except <p>
+        var regex = /<[^>]+>(?!<\/?p>)/g;
+
+        // Replace the matched tags with an empty string
+        return text.replace(regex, '');
+    }
+
+
+    // limit post-content class to 100 words
+    var postContents = document.getElementsByClassName('post-content')
+    console.log(postContents)
+    for (var i = 0; i < postContents.length; i++) {
+        var content = postContents[i].innerHTML
+        content = removeImgTags(content)
+        content = removeHtmlTagsKeepP(content)
+
+        var words = content.split(' ')
+        // remove tags
+
+        var newContent = ''
+        for (var j = 0; j < 100; j++) {
+            if(words[j]!=undefined){
+                newContent += words[j] + ' '
+            }
+        }
+        postContents[i].innerHTML = newContent + '...'
+    }
+
+</script>
+
+{% endblock %}
