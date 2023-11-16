@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block metatags %}
+<title>Search Results: College Connect</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Search Query: {{ query }}</h1>
+    <br>
+
+    {% if count > 0 %}
+    <h2>Results:</h2>
+    {% for object in results %}
+    {% with object.get_model_name as class %}
+    {% if class == 'Post' %}
+    <div class="card">
+        <a class="feed-link" class="text-light" style="text-decoration:none;color:burlywood"
+            href="/post/{{object.slug}}">
+
+            <div class="row text-light container">
+                <div class="col-md-10">
+                    <h1>{{object.title}}</h1>
+                </div>
+                <div class="col-md-2">
+                    <h3>{{object.user}}</h3>
+                    <p class="text-medium text-muted">{{object.created_at}}</p>
+                    <span>Tags: </span>
+                    {% for t in object.tags.all %}
+                    <span class="text-medium text-muted">
+                        {{t.name}},
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </a>
+
+        <div class="post-content">
+            {{object.content | safe}}
+        </div>
+
+        <div class="text-center" style="padding:10px">
+            <a href="/post/{{object.slug}}" class="bg-charcoal-black">
+                Read More
+            </a><br>
+        </div>
+
+        <form class="text-center comment-card" method="post" action="/post/add-comment/{{object.slug}}">
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-md-10">
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="comment" name="comment"
+                            placeholder="Add your comment here ..." />
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" style="width:90%;padding:20px;margin:25px;border-radius:20px"
+                        class="btn btn-success">Comment</button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+    {% elif class == 'Resource' %}
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">{{ object.title }}</h2>
+            <span class="text-muted">
+                Uploaded on: {{ object.uploaded_at }} |
+                Uploaded by : <a href="/account/profile/{{object.user.username}}">{{object.user.username}}</a> |
+                Tags:
+                {% for tag in object.tags.all %}
+                <a href="/resource/tag/{{tag.slug}}">{{tag.name}}</a>
+                {% endfor %}
+            </span>
+            <div class="row">
+                <div class="col">
+                    <a href="{{object.files.url}}">
+                        <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                            class="btn btn-success">View Resource</button>
+                    </a>
+                </div>
+                <div class="col">
+                    <a href="/resource/download/{{object.id}}">
+                        <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                            id='downloadButton' class="btn btn-success">Download</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% elif class == 'Announcement' %}
+    <div class="card">
+        <div class="row" style="padding:10px;">
+            <!-- title -->
+            <h3>{{object.title}} </h3>
+            <!-- date -->
+            <br>
+            <span class="text-muted"> {{object.date_created}} </span><br> <br>
+            {% if object.featured_img %}
+                <img style="width:900px;padding:10px" src="{{object.featured_img.url}}" alt="feature_img"><br> <br>
+            {% endif %}
+            <!-- text of announcement -->
+            <span class="text-light">
+                {{object.content}}
+            </span>
+        </div>
+    </div>
+
+    {% elif class == 'Student' %}
+    <div class="card text-light">
+        <a href="/account/profile/{{object.user.username}}">
+            <h3>{{object.user.first_name}} {{object.user.last_name}} ({{object.user.username}})</h3>
+        </a>
+        <br>
+        <div class="row">
+            <div class="col-sm-4">
+                SRN : {{object.student_id}} <br>
+                <a href="/account/profile/{{object.user.username}}">
+                    <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                        class="btn btn-success">
+                        Go to profile
+                    </button>
+                </a>
+
+
+            </div>
+            <div class="col-sm-4">
+                Bio : {{object.bio}} <br>
+                Department : {{object.department.department_name}} <br>
+                Branch : {{object.branch.branch_name}} <br>
+                Year of Passing Out : {{object.year_of_passing_out}}  <br>
+            </div>
+            <div class="col-sm-4">
+                <!-- show chat if show_number enabled -->
+                {% if object.show_number %}
+
+                <a href="{{object.whatsapp_link}}">
+                    <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                        class="btn btn-success">
+                        Chat
+                    </button>
+                </a>
+
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+    {% else %}
+    <h2>No results found for '{{ query }}'.</h2>
+    {% endif %}
+    
+</div>
+
+
+<script>
+    function removeImgTags(text) {
+        // Use a regular expression to match and remove <img> tags
+        var regex = /<img[^>]*>/g;
+
+        // Replace the matched <img> tags with an empty string
+        return text.replace(regex, '');
+    }
+
+    function removeHtmlTagsKeepP(text) {
+        // Use a regular expression to match all HTML tags except <p>
+        var regex = /<[^>]+>(?!<\/?p>)/g;
+
+        // Replace the matched tags with an empty string
+        return text.replace(regex, '');
+    }
+
+
+    // limit post-content class to 100 words
+    var postContents = document.getElementsByClassName('post-content')
+    console.log(postContents)
+    for (var i = 0; i < postContents.length; i++) {
+        var content = postContents[i].innerHTML
+        content = removeImgTags(content)
+        content = removeHtmlTagsKeepP(content)
+
+        var words = content.split(' ')
+        // remove tags
+
+        var newContent = ''
+        for (var j = 0; j < 100; j++) {
+            if (words[j] != undefined){
+                newContent += words[j] + ' '
+            }
+        }
+        postContents[i].innerHTML = newContent + '...'
+    }
+
+</script>
+
+
+{% endblock %}
