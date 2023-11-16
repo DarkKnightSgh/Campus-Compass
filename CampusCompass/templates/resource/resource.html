@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block metatags %}
+<title>Clubs : College Connect</title>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10">
+            <h1 class="text-right">Resources</h1>
+        </div>
+        <div class="col-md-2">
+            <a href="/resource/upload">
+                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                    class="btn btn-success">Upload new resource</button>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+
+        {% for resource in resources %}
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">{{ resource.title }}</h2>
+                {% if resource.user == user %}
+                <a href="/resource/edit/{{resource.id}}">Edit Resource</a><br>
+                <a href="/resource/delete/{{resource.id}}">Delete Resource</a><br>
+                {% endif %}
+                <span class="text-muted">
+                    Uploaded on: {{ resource.uploaded_at }} |
+                    Uploaded by : <a href="/account/profile/{{resource.user.username}}">{{resource.user.username}}</a> |
+                    Tags:
+                    {% for tag in resource.tags.all %}
+                    <a href="/resource/tag/{{tag.slug}}">{{tag.name}}</a>
+                    {% endfor %}
+                </span>
+                <div class="row">
+                    <div class="col">
+                        <a href="{{resource.files.url}}">
+                            <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                                class="btn btn-success">View Resource</button>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="/resource/download/{{resource.id}}">
+                            <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                                id='downloadButton' class="btn btn-success">Download</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+
+{% endblock %}

@@ -78,3 +78,33 @@ def upload_resource(request):
     else:
         form = ResourceForm()
     return render(request, 'resource/upload_resource.html', {'form': form,"name":"Upload Resources"})
+
+login_required(login_url='/account/login')
+def delete_resource(request,id=None):
+    username=request.user.__str__()
+    # get resource
+    resource = Resource.objects.get(id=id)
+    # get user
+    user=User.objects.get(username=username)
+    if resource.user==user:
+        resource.delete()
+        messages.success(request, "Resource successfully deleted!")
+        return redirect('/resource')
+    else:
+        messages.error(request, "You are not authorized to delete this resource.")
+        return redirect('/resource')
+    
+login_required(login_url='/account/login')
+def download_resource(request,id):
+    username=request.user.__str__()
+    resource = Resource.objects.get(id=id)
+    # Open and read the file
+    with open(resource.files.path, 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/octet-stream')
+        
+    # Set the Content-Disposition header to suggest a filename for the downloaded file
+    response['Content-Disposition'] = f'attachment; filename="{resource.files.name}"'
+    
+    return response
+    
+   
