@@ -13,7 +13,7 @@ def is_club_head(username):
         else:
             return False
     except Exception as e:
-        print(e)
+        # print(e)
         return False
     
 
@@ -26,7 +26,7 @@ def is_social_media_manager(username):
         else:
             return False
     except Exception as e:
-        print(e)
+        # print(e)
         return False
     
 def which_club_head(username):
@@ -38,7 +38,7 @@ def which_club_head(username):
         else:
             return False
     except Exception as e:
-        print(e)
+        # print(e)
         return False
 
 def which_club_social_media_manager(username):
@@ -50,7 +50,7 @@ def which_club_social_media_manager(username):
         else:
             return False
     except Exception as e:
-        print(e)
+        # print(e)
         return False
 
 # create decorator
@@ -91,7 +91,7 @@ def is_club_member(username):
         club_member=ClubMember.objects.get(user=user)
         return True
     except Exception as e:
-        print(e)
+        # print(e)
         return False
 
 def which_club_member(username):
@@ -100,7 +100,7 @@ def which_club_member(username):
         club_member=ClubMember.objects.get(user=user)
         return club_member.club
     except Exception as e:
-        print(e)
+        # print(e)
         return False
 
 

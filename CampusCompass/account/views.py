@@ -169,10 +169,11 @@ def profile(request):
         club_head = is_club_head(username)
         social_media_manager = is_social_media_manager(username)
         club_member = is_club_member(username)
-
+        club_names=[]
         # Check which clubs the user is in
-        club_members = ClubMember.objects.filter(user=user)
-        club_names = [club.club.club_name for club in club_members]
+        if(is_club_member):
+            club_members = ClubMember.objects.filter(user=user)
+            club_names = [club.club.club_name for club in club_members]
 
         # Filter posts by the user's branch
         posts = Post.objects.filter(user=user)
@@ -227,8 +228,9 @@ def profile_user(request,username):
         club_member = is_club_member(username)
 
         # Check which clubs the user is in
-        club_members = ClubMember.objects.filter(user=user)
-        club_names = [club.club.club_name for club in club_members]
+        if(is_club_member):
+            club_members = ClubMember.objects.filter(user=user)
+            club_names = [club.club.club_name for club in club_members]
 
         # Filter posts by the user's branch
         posts = Post.objects.filter(user=user)

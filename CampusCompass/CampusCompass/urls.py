@@ -31,6 +31,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('post/', include('post.urls')),
     path('announcement/', include('announcement.urls')),
+    path('search/', include('search.urls')),
     path('resource/', include('resource.urls')),
     path('branch/', include('branch.urls')),
 
