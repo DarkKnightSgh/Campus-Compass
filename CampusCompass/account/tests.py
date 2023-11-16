@@ -55,7 +55,6 @@ class ModelTestCase(TestCase):
 
         mentor = Mentor.objects.create(
             student=student,
-            username='testuser',
             resume='path/to/resume.pdf',
             description='Test Mentor Description',
             approved=True

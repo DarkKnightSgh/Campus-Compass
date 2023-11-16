@@ -44,3 +44,6 @@
 /CampusCompass/media
 
 /CampusCompass/db.sqlite3
+
+!/CampusCompass/search/migrations/__init__.py
+/CampusCompass/search/__pycache__/
