@@ -471,3 +471,71 @@ class FeedTagViewSeleniumTest(StaticLiveServerTestCase):
         self.assertIn(self.post.title, body.text)
         self.assertIn(self.tag.name, body.text)
         
+
+class PostDetailAndCommentSeleniumTest(StaticLiveServerTestCase):
+    def setUp(self):
+        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))  
+        self.user = User.objects.create_user(username='testuser', password='12345',email="test@example.com")
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.student = Student.objects.create(student_id="PES12736437",
+                                              user=self.user,
+                                              department=self.department,
+                                              branch=self.branch,
+                                              whatsapp_number="+91992636672",
+                                              year_of_passing_out=2024,
+                                            )
+        self.post = Post.objects.create(
+            title='Test Post', 
+            content ="test data",
+            user = self.user,
+            slug="test-post",
+        )
+        self.tag = Tag.objects.create(name='Test Tag')
+        
+        self.post.tags.add(self.tag)
+        self.post.branch.add(self.branch)
+        self.browser.set_page_load_timeout(120)
+    
+    def tearDown(self):
+        self.browser.quit()
+
+    def test_post_detail_and_add_comment(self):
+        # Log in
+        self.browser.get(self.live_server_url + '/account/login')
+        username_input = self.browser.find_element(By.NAME,"username")
+        password_input = self.browser.find_element(By.NAME,"password")
+        username_input.send_keys('testuser')
+        password_input.send_keys('12345')
+        password_input.send_keys(Keys.RETURN)
+
+        WebDriverWait(self.browser, 2).until(
+            EC.url_to_be(self.live_server_url + '/account/profile')
+        )
+
+        # Navigate to the post detail page
+        self.browser.get(self.live_server_url + '/post/' + self.post.slug)
+
+        # Check that the post details are displayed
+        body = self.browser.find_element(By.TAG_NAME, 'body')
+        self.assertIn(self.post.title, body.text)
+        self.assertIn(self.post.content, body.text)
+        # Check that each tag is in the body text
+        for tag in self.post.tags.all():
+            self.assertIn(tag.name, body.text)
+
+        # Fill in the comment form
+        comment_input = self.browser.find_element(By.NAME, 'comment')
+        comment_input.send_keys('Test Comment')
+
+        # Submit the form
+        comment_input.submit()
+
+        # Wait for the page to reload
+        WebDriverWait(self.browser, 2).until(
+            EC.url_to_be(self.live_server_url + '/post/' + self.post.slug)
+        )
+
+        # Check that the comment was added
+        body = self.browser.find_element(By.TAG_NAME, 'body')
+        self.assertIn('Test Comment', body.text)
