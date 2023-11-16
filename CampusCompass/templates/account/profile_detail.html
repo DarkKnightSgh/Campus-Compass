@@ -13,72 +13,8 @@
     <div class="row">
         <!-- User details -->
         <div class="col-md-4" style="padding:20px;">
-            {% if not student.email_confirmed %}
-            <a href="/account/confirm_email">
-                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                    class="btn btn-danger">
-                    Verify Email
-                </button>
-            </a>
-            {% endif %}
-            <a href="/account/change-password">
-                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                    class="btn btn-danger">
-                    Change Password
-                </button>
-            </a>
-            {% if club_head %}
-            <div class="row">
-                <div class="col">
-                    <a href="/account/approve_membership">
-                        <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                            class="btn btn-success">
-                            Add Club Members
-                        </button>
-                    </a>
-                </div>
-                <div class="col">
-                    <a href="/announcement/create">
-                        <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                            class="btn btn-success">
-                            Add Annoncement
-                        </button>
-                    </a>
-                </div>
-            </div>
-            {% elif social_media_manager %}
-            <a href="/announcement/create">
-                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                    class="btn btn-success">
-                    Add Annoncement
-                </button>
-            </a>
-            {% endif %}
-
             <div class="bg-dusky mb-3 content">
-                <div class="row">
-                    <div class="col-md-6">
-                        <span>
-                            <a href="/account/edit_profile">
-                                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                                    class="btn btn-success">
-                                    Edit Profile
-                                </button>
-                            </a>
 
-                        </span>
-                    </div>
-                    <div class="col-md-6">
-                        <a href="/account/logout">
-                            <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                                class="btn btn-danger">
-                                Logout
-                            </button>
-                        </a>
-                    </div>
-
-                </div>
-                <hr>
 
                 <div class="row">
                     <h3> Bio </h3>
@@ -194,30 +130,6 @@
                 <hr>
                 {% endif %}
                 <div class="row">
-                    {% if student.is_mentor %}
-                    <div class="col-md-6">
-                        <span>
-                            <a href="/account/mentor_registration">
-                                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                                    class="btn btn-success">
-                                    Edit Mentor account
-                                </button>
-                            </a>
-                        </span>
-                    </div>
-                    {% else %}
-                    <div class="col-md-6">
-                        <span>
-                            <a href="/account/mentor_registration">
-                                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                                    class="btn btn-success">
-                                    Apply for Mentorship
-                                </button>
-                            </a>
-                        </span>
-                    </div>
-
-                    {% endif %}
 
                     <div class="col-md-4">
                         {% if student.show_number %}
@@ -242,13 +154,6 @@
         <!-- User Posts -->
         <div class="col-md-8">
             <div class="row">
-                <!-- <h3>Create Post </h3> -->
-                <a href="/post/make_post">
-                    <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                        class="btn btn-success">Create Post</button>
-                </a>
-
-                <!--form comes here (rich text editor) -->
 
             </div>
             <div class="row">
@@ -285,9 +190,6 @@
                             <a href="/post/{{p.slug}}" class="bg-charcoal-black">
                                 Read More
                             </a><br>
-                            {% if p.user == user %}
-                            <a href="/post/edit_post/{{p.slug}}">Edit Post</a>
-                            {% endif %}
                         </div>
 
                         <form class="text-center comment-card" method="post" action="/post/add-comment/{{p.slug}}">
@@ -319,48 +221,45 @@
             </div>
 
         </div>
-        <div class="row">
-            <h1>My Resources </h1>
-            {% for resource in resources %}
+    </div>
 
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">{{ resource.title }}</h2>
-                    {% if resource.user == user %}
-                    <a href="/resource/edit/{{resource.id}}">Edit Resource</a><br>
-                    <a href="/resource/delete/{{resource.id}}">Delete Resource</a><br>
-                    {% endif %}
-                    <span class="text-muted">
-                        Uploaded on: {{ resource.uploaded_at }} |
-                        Uploaded by : <a
-                            href="/account/profile/{{resource.user.username}}">{{resource.user.username}}</a> |
-                        Tags:
-                        {% for tag in resource.tags.all %}
-                        <a href="/resource/tag/{{tag.slug}}">{{tag.name}}</a>
-                        {% endfor %}
-                    </span>
-                    <div class="row">
-                        <div class="col">
-                            <a href="{{resource.files.url}}">
-                                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                                    class="btn btn-success">View Resource</button>
-                            </a>
-                        </div>
-                        <div class="col">
-                            <a href="/resource/download/{{resource.id}}">
-                                <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
-                                    id='downloadButton' class="btn btn-success">Download</button>
-                            </a>
-                        </div>
+    <div class="row">
+        <h1>My Resources </h1>
+        {% for resource in resources %}
+
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">{{ resource.title }}</h2>
+                <span class="text-muted">
+                    Uploaded on: {{ resource.uploaded_at }} |
+                    Uploaded by : <a href="/account/profile/{{resource.user.username}}">{{resource.user.username}}</a> |
+                    Tags:
+                    {% for tag in resource.tags.all %}
+                    <a href="/resource/tag/{{tag.slug}}">{{tag.name}}</a>
+                    {% endfor %}
+                </span>
+                <div class="row">
+                    <div class="col">
+                        <a href="{{resource.files.url}}">
+                            <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                                class="btn btn-success">View Resource</button>
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a href="/resource/download/{{resource.id}}">
+                            <button type="submit" style="width:90%;padding:20px;margin:20px;border-radius:20px"
+                                id='downloadButton' class="btn btn-success">Download</button>
+                        </a>
                     </div>
                 </div>
             </div>
-
-            {% endfor %}
-
         </div>
 
+        {% endfor %}
+
     </div>
+
+</div>
 </div>
 </div>
 

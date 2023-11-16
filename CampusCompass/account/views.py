@@ -8,14 +8,27 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.models import auth
 from branch.models import Department, Branch
-from .models import Student, Mentor
+from .models import Student,Mentor,ClubMember,Club
+from .forms import ClubMembershipApplicationForm
+from .decorator import *
+from django.contrib.auth.decorators import login_required
+from post.models import Post
+from resource.models import Resource
+
+# DBMS
+from django.http import HttpResponse
+from django.db import connection
+
+# admin decorator
+from django.contrib.admin.views.decorators import staff_member_required
+
+
+
 from taggit.managers import TaggableManager
 from taggit.models import Tag
 
-# decorators
-from django.contrib.auth.decorators import login_required
 
-# authentication
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -26,9 +39,6 @@ from django.contrib.auth.models import User
 # from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from django.views.generic import View
-
-from .decorator import *
-
 
 
 # Create your views here.
@@ -109,7 +119,6 @@ def login(request):
     context={}
     return render(request, 'account/login.html',context)
 
-
 def login_submit(request):
     context={}
     if request.method == 'POST':        
@@ -134,72 +143,180 @@ def logout(request):
     return redirect('/')
 
 
-
-def confirm_email(request):
-    user=request.user
-    current_site = get_current_site(request)
-    subject = 'Activate Your Campus Compass Account'
-    print(user)
-    message = render_to_string('account/account_activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
-            })
-    user.email_user(subject, message)
-
-    messages.success(request, ('Your email confirmation is pending! Verify now'))
-    return redirect('/')
-
-
-class ActivateAccount(View):
-
-    def get(self, request, uidb64, token, *args, **kwargs):
-        try:
-            # uid = force_text(urlsafe_base64_decode(uidb64))
-            uid=str(urlsafe_base64_decode(uidb64), 'utf-8')
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-
-        if user is not None and account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.student.email_confirmed = True
-            student=Student.objects.get(user=user)
-            student.email_confirmed=True
-            student.save()
-            user.save()
-            auth.login(request, user)
-            messages.success(request, ('Your email has been confirmed.'))
-            return redirect('/')
-        else:
-            messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
-            return redirect('/')
-
-
-
-def profile(request):
-    username= request.user
-    if(username.__str__() != 'AnonymousUser'):
-        user= User.objects.get(username=username)
-        student = Student.objects.get(user=user)
-        SRN= student.student_id
-        # mentor = Mentor.objects.get(student_id=SRN)
-        # check if mentor
-        mentor=None
-        if(student.is_mentor):
-            mentor=Mentor.objects.get(username=username)
+# def profile(request):
+#     username= request.user
+#     if(username.__str__() != 'AnonymousUser'):
+#         user= User.objects.get(username=username)
+#         student = Student.objects.get(user=user)
+#         SRN= student.student_id
+#         # mentor = Mentor.objects.get(student_id=SRN)
+#         # check if mentor
+#         mentor=None
+#         if(student.is_mentor):
+#             mentor=Mentor.objects.get(username=username)
         
-        context ={
-            'user':user,
-            'student':student,
-            'mentor':mentor,
+#         club_head=False
+#         if(is_club_head(username)):
+#             club_head=True
+        
+#         social_media_manager=False
+#         if(is_social_media_manager(username)):
+#             social_media_manager=True
+
+#         club_member=False
+#         if(is_club_member(username)):
+#             club_member=True
+        
+#         # check which clubs user is in
+#         club_member=ClubMember.objects.filter(user=user)
+#         club_list=[clb for clb in Club.objects.all()]
+#         club=[club.club_name for club in club_list]
+
+#         # Filter posts by the user's branch
+#         post = Post.objects.filter(user=user)
+
+#         # sort wrt to most recent
+#         post = post.order_by('-created_at')
+
+#         resource = Resource.objects.filter(user=user)
+#         resource = resource.order_by('-uploaded_at')
+
+        
+#         context ={
+#             'user':user,
+#             'student':student,
+#             'mentor':mentor,
+#             'club_head':club_head,
+#             'social_media_manager':social_media_manager,
+#             'club_member':club_member,
+#             'clubs':club,
+#             'post':post,
+#             'resources':resource,
+
+#         }
+
+#         return render(request, 'account/profile.html',context)
+#     else:
+#         messages.error(request,"Please sign in first")
+#         return redirect('/account/login')
+
+
+# with joins
+def profile(request):
+    username = request.user
+    if username.is_anonymous:
+        messages.error(request, "Please sign in first")
+        return redirect('/account/login')
+
+    # Retrieve user profile data using the joins query
+    user_profile = (
+        User.objects
+        .filter(username=username)
+        .select_related('student')  # Perform a join for the student
+        .prefetch_related(
+            'student__mentor', 'student__branch'
+        )  # Perform joins for mentor, club members, and student branches
+        .first()  # Retrieve the first matching user (you can adjust the query as needed)
+    )
+
+    if user_profile:
+        user = user_profile
+        student = user.student
+        mentor = user_profile.student.mentor if user_profile.student.is_mentor else None
+
+        club_head = is_club_head(username)
+        social_media_manager = is_social_media_manager(username)
+        club_member = is_club_member(username)
+
+        # Check which clubs the user is in
+        club_members = ClubMember.objects.filter(user=user)
+        club_names = [club.club.club_name for club in club_members]
+
+        # Filter posts by the user's branch
+        posts = Post.objects.filter(user=user)
+
+        # Sort posts by the most recent
+        posts = posts.order_by('-created_at')
+
+        resources = Resource.objects.filter(user=user)
+        resources = resources.order_by('-uploaded_at')
+
+        context = {
+            'user': user,
+            'student': student,
+            'mentor': mentor,
+            'club_head': club_head,
+            'social_media_manager': social_media_manager,
+            'club_member': club_member,
+            'clubs': club_names,
+            'post': posts,
+            'resources': resources,
         }
 
-        return render(request, 'account/profile.html',context)
+        return render(request, 'account/profile.html', context)
     else:
-        messages.error(request,"Please sign in first")
+        messages.error(request, "User profile not found.")
         return redirect('/account/login')
+
+
+def profile_user(request,username):
+    who=request.user.__str__()
+    if(who=="AnonymousUser"):
+        messages.error(request,"Please sign in first")
+        return redirect("/account/login" )    
+    print(username)
+    user_profile = (
+        User.objects
+        .filter(username=username)
+        .select_related('student')  # Perform a join for the student
+        .prefetch_related(
+            'student__mentor', 'student__branch'
+        )  # Perform joins for mentor, club members, and student branches
+        .first()  # Retrieve the first matching user (you can adjust the query as needed)
+    )
+
+    if user_profile:
+        user = user_profile
+        student = user.student
+        mentor = user_profile.student.mentor if user_profile.student.is_mentor else None
+
+        club_head = is_club_head(username)
+        social_media_manager = is_social_media_manager(username)
+        club_member = is_club_member(username)
+
+        # Check which clubs the user is in
+        club_members = ClubMember.objects.filter(user=user)
+        club_names = [club.club.club_name for club in club_members]
+
+        # Filter posts by the user's branch
+        posts = Post.objects.filter(user=user)
+
+        # Sort posts by the most recent
+        posts = posts.order_by('-created_at')
+
+        resources = Resource.objects.filter(user=user)
+        resources = resources.order_by('-uploaded_at')
+
+        context = {
+            'user': user,
+            'student': student,
+            'mentor': mentor,
+            'club_head': club_head,
+            'social_media_manager': social_media_manager,
+            'club_member': club_member,
+            'clubs': club_names,
+            'post': posts,
+            'resources': resources,
+        }
+
+        return render(request, 'account/profile_detail.html', context)
+    else:
+        messages.error(request, "User profile not found.")
+        return redirect('/account/login')
+
+def change_password(request):
+    context ={}
+    return render(request, 'account/change_password.html',context)
 
 def edit_profile(request):
     username= request.user
@@ -269,8 +386,48 @@ def edit_profile_submit(request):
         
     else:
         pass
+    
+
+def confirm_email(request):
+    user=request.user
+    current_site = get_current_site(request)
+    subject = 'Activate Your College Connect Account'
+    print(user)
+    message = render_to_string('account/account_activation_email.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+    user.email_user(subject, message)
+
+    messages.success(request, ('Your email confirmation is pending! Verify now'))
+    return redirect('/')
 
 
+class ActivateAccount(View):
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            # uid = force_text(urlsafe_base64_decode(uidb64))
+            uid=str(urlsafe_base64_decode(uidb64), 'utf-8')
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.student.email_confirmed = True
+            student=Student.objects.get(user=user)
+            student.email_confirmed=True
+            student.save()
+            user.save()
+            auth.login(request, user)
+            messages.success(request, ('Your email has been confirmed.'))
+            return redirect('/')
+        else:
+            messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+            return redirect('/')
 
 
 def can_apply_again(mentor):
@@ -298,13 +455,12 @@ def mentor_registration(request):
             
             user=User.objects.get(username=username)
             student = Student.objects.get(user=user)
-            if (Mentor.objects.filter(username=username).exists()):
-                mentor=Mentor.objects.get(username=username)
+            if (Mentor.objects.filter(student=student).exists()):
+                mentor=Mentor.objects.get(student=student)
             else:
                 mentor = Mentor()
             
             mentor.student=student
-            mentor.username=username
             mentor.approved=0
             mentor.resume = resume
             mentor.description = request.POST.get("description")
@@ -326,12 +482,13 @@ def mentor_registration(request):
             return redirect('/account/mentor_registration')
         
     context={}
-    if Mentor.objects.filter(username=username).exists():
-        mentor=Mentor.objects.get(username=username)
+    user=User.objects.get(username=username)
+    student = Student.objects.get(user=user)
+    if Mentor.objects.filter(student=student).exists():
+        mentor=Mentor.objects.get(student=student)
         can_apply_again(mentor)
         context['mentor']=mentor
     return render(request, 'account/mentor_registration.html',context)  # Render the form again if it's a GET request
-
 
 def show_mentor(request):
     # get all mentors of branch
@@ -342,7 +499,7 @@ def show_mentor(request):
     # Branch
     branch=Branch.objects.get(branch_code=student.branch.branch_code)
     mentors=Mentor.objects.filter(student__branch__branch_code=branch.branch_code,approved=True)    
-    print(mentors[0].student.user.username)
+    #print(mentors[0].student.user.username)
     context={'mentors':mentors}
     return render(request, 'account/show_mentor.html',context)
 
@@ -354,9 +511,10 @@ def show_mentors_by_domain(request,domain):
     student=Student.objects.get(user=user)
     # Branch
     mentors=Mentor.objects.filter(approved=True,domain__slug=domain)    
-    print(mentors[0].student.user.username)
+    #print(mentors[0].student.user.username)
     context={'mentors':mentors}
     return render(request, 'account/show_mentor.html',context)
+
 
 @club_head_required
 def approve_membership(request):
