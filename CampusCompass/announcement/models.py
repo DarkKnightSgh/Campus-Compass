@@ -18,7 +18,8 @@ class AnnouncementQuerySet(models.QuerySet):
                 'announcement_id', 'title', 'content', 'date_created'
             )  # Add more fields as needed
         return qs
-
+class Department(models.Model):
+    name = models.CharField(max_length=100)
 class Announcement(models.Model):
     announcement_id= models.BigAutoField(primary_key=True,auto_created=True)
     title = models.CharField(max_length=100)
