@@ -64,7 +64,6 @@ class Student(models.Model):
 
 class Mentor(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE,related_name='mentor')
-    username= models.CharField(max_length=300,blank=False,null=False,default="AnonymousUser")
     resume= models.FileField(upload_to='resume/')
     domain= TaggableManager()
     description= models.CharField(max_length=5000,null=True, blank= True)
