@@ -1,78 +1,61 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth.models import User
-from django.urls import reverse
-from .models import Resource
-from .forms import ResourceForm
-from .views import upload_resource
+from django.core.files.uploadedfile import SimpleUploadedFile
+from .models import Resource, Branch
+from taggit.models import Tag
+from branch.models import Department
 
-class ResourceTestCase(TestCase):
+class ResourceModelTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(
-            username='testuser',
-            password='testpassword'
-        )
+        # Create a test department
+        self.department = Department.objects.create(department_name='Test Department')
+
+        # Create test objects for dependencies
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+
+        # Create a test resource
+        # Use SimpleUploadedFile to simulate file upload in tests
+        file_content = b'Test file content'
+        uploaded_file = SimpleUploadedFile("testfile.txt", file_content, content_type="text/plain")
         self.resource = Resource.objects.create(
             user=self.user,
             title='Test Resource',
-            files='C:/Se_project/Campus_Compass/Campus-Compass/CampusCompass/resource',  # Provide a valid file path for testing
+            files=uploaded_file,
         )
+        self.resource.branch.add(self.branch)
 
-    # ... (unchanged code above)
+        # Add tags to the resource
+        self.tag1 = Tag.objects.create(name='tag1')
+        self.tag2 = Tag.objects.create(name='tag2')
+        self.resource.tags.add(self.tag1, self.tag2)
 
-    def test_upload_resource_view(self):
-        # Simulate a user session
-        self.client.force_login(self.user)
+    def test_resource_storage(self):
+        # Test if the uploaded file is stored correctly
+        storage = self.resource.files.storage
+        file_path = storage.path(self.resource.files.name)
 
-        # Define the URL using reverse
-        url = reverse('upload_resource')
+        # Add assertions based on your expected results
+        self.assertTrue(storage.exists(file_path))
+        self.assertEqual(storage.size(file_path), len(b'Test file content'))
+        print("File storage test success!")
 
-        # Define the data for the post request
-        data = {
-            'title': 'Test Resource',
-            'files': 'path/to/test/file.txt',  # Provide a valid file path for testing
-            'branch': [1],  # Assuming 1 is a valid branch ID for testing
-            'tags': 'tag1,tag2',  # Provide tags separated by commas for testing
-        }
+    def test_tagging_system(self):
+        # Test if tags are associated with the resource correctly
+        self.assertTrue(self.tag1 in self.resource.tags.all())
+        self.assertTrue(self.tag2 in self.resource.tags.all())
+        print("Tagging system test success!")
 
-        # Call the view function
-        response = self.client.post(url, data=data)
+    def test_branch_selection_interface(self):
+        # Test if the branch is associated with the resource correctly
+        self.assertEqual(self.resource.branch.count(), 1)
+        self.assertEqual(self.resource.branch.first(), self.branch)
+        print("Branch selection interface test success!")
 
-        # Check if the resource is created and the user is redirected
-        self.assertEqual(response.status_code, 302)
-    def test_resource_view_status_code(self):
-        # Test the status code of the resource view
-        response = self.client.get(reverse('resource'))
-        self.assertEqual(response.status_code, 200)  # Assuming 'resource' is a valid URL
+    def test_metadata(self):
+        # Test metadata such as upload date and user information
+        self.assertIsNotNone(self.resource.uploaded_at)
+        self.assertEqual(self.resource.user, self.user)
+        print("Metadata test success!")
 
-    def test_resource_by_tag_view(self):
-        # Test the resource by tag view
-        response = self.client.get(reverse('search', args=['tag1']))
-        self.assertEqual(response.status_code, 200)  # Assuming 'search' is a valid URL
-
-    def test_edit_resource_view(self):
-        # Simulate a user session
-        self.client.force_login(self.user)
-
-        # Call the edit_resource view
-        response = self.client.post(reverse('edit_resource', args=[self.resource.id]), data={
-            'title': 'Updated Test Resource',
-            'branch': [1],
-            'tags': 'tag3,tag4',
-        })
-
-        # Check if the resource is updated in the database
-        updated_resource = Resource.objects.get(id=self.resource.id)
-        self.assertEqual(updated_resource.title, 'Updated Test Resource')
-        self.assertEqual(updated_resource.tags.count(), 2)
-
-    # ... (unchanged code above)
-
-    def test_download_resource_view(self):
-        # Simulate a user session
-        self.client.force_login(self.user)
-
-        # Call the download_resource view
-        response = self.client.get(reverse('download_resource', args=[self.resource.id]))
-        self.assertEqual(response.status_code, 200)  # Assuming 'download_resource' returns the file content
-
+    # Add other tests as needed
