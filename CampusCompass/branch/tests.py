@@ -1,5 +1,7 @@
 from django.test import TestCase, Client
 from .models import Branch, Department
+from account.models import Mentor
+from account.views import Mentor
 from django.urls import reverse
 import json
 
@@ -119,4 +121,3 @@ class GetBranchesViewTest(TestCase):
         response = self.client.get(reverse('get_branches', args=[id]))
         branches = json.loads(response.content)['branches']
         self.assertEqual(len(branches), 0)
-
