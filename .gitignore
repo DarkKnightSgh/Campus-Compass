@@ -47,3 +47,4 @@
 
 !/CampusCompass/search/migrations/__init__.py
 /CampusCompass/search/__pycache__/
+/CampusCompass/search/migrations/__pycache__
