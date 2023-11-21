@@ -2,6 +2,16 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import Announcement, Branch
 from branch.models import Department
+from django.db import models
+from django.contrib.auth.models import User
+from branch.models import *
+from branch.models import Department,Branch
+from taggit.managers import TaggableManager
+from django.urls import reverse
+from .forms import AnnouncementForm
+from .views import create
+
+from django.db.models import Q
 
 
 class AnnouncementModelTest(TestCase):
@@ -51,7 +61,7 @@ class AnnouncementModelTest(TestCase):
 
     def test_announcement_creation_view(self):
         # Test F001: Announcement Creation
-        self.client.force_login(self.club_head_user)
+        self.client.force_login(self.user)
 
         response = self.client.get(reverse('create'))
         self.assertEqual(response.status_code, 302)
@@ -68,11 +78,11 @@ class AnnouncementModelTest(TestCase):
         if not form.is_valid():
             print(form.errors)
         self.assertFalse(form.is_valid())
-        
+
         response = self.client.post(reverse('create'), form_data)
         self.assertEqual(response.status_code, 302)  # Redirect after successful form submission
         self.assertTrue(Announcement.objects.filter(title='Test Announcement').exists())
-
+        
     def test_announcement_date_created(self):
         print("Running test_announcement_date_created")
         # Test that the date_created field is set automatically
