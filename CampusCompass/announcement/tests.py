@@ -72,7 +72,7 @@ class AnnouncementTestCase(TestCase):
         form_data = {
             'title': 'Test Announcement',
             'content': 'This is a test announcement.',
-            'featured_img': '',  # Replace with the actual file data if needed
+            'featured_img': None,  # Replace with the actual file data if needed
         }
 
         form = AnnouncementForm(data=form_data)
