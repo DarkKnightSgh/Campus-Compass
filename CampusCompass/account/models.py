@@ -90,7 +90,7 @@ class Mentor(models.Model):
             print("hello")
             email_from = settings.EMAIL_HOST_USER
             subject = 'Mentor Application Approved'
-            message = 'Congratulations '+ u.first_name+" "+ u.last_name +'!! Your mentor application has been approved. You can now mentor students at our platform College Connect.'
+            message = 'Congratulations '+ u.first_name+" "+ u.last_name +'!! Your mentor application has been approved. You can now mentor students at our platform Campus Compass.'
             recipient_list = [self.student.college_email,u.email ]
             # send_mail( subject, message, email_from, recipient_list ,fail_silently=False)
             # u.email_user(subject,message)
@@ -103,7 +103,7 @@ class Mentor(models.Model):
             u=User.objects.get(username=self.student.user.username)
             email_from = settings.EMAIL_HOST_USER
             subject = 'Removed as Mentor'
-            message = 'Sorry '+ u.first_name+" "+ u.last_name +', You can no longer mentor students at our platform College Connect.'
+            message = 'Sorry '+ u.first_name+" "+ u.last_name +', You can no longer mentor students at our platform Campus Compass.'
             recipient_list = [self.student.college_email,u.email ]
             # send_mail( subject, message, email_from, recipient_list )
             # u.email_user(subject,message)
