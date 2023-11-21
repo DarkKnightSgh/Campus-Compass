@@ -6,6 +6,8 @@ from post.models import Post
 from resource.models import Resource
 from announcement.models import Announcement
 from account.models import Student
+from branch.models import Branch,Department
+from taggit.models import Tag
 
 class SearchViewTestCase(TestCase):
     def setUp(self):
@@ -14,12 +16,34 @@ class SearchViewTestCase(TestCase):
             username='testuser',
             password='testpassword'
         )
+        self.department = Department.objects.create(department_name="test_dept")
+        self.branch = Branch.objects.create(branch_name='Test Branch', department=self.department)
+        self.student = Student.objects.create(student_id="PES12736437",
+                                              user=self.user,
+                                              department=self.department,
+                                              branch=self.branch,
+                                              whatsapp_number="+91992636672",
+                                              year_of_passing_out=2024,
+                                            )
 
         # Create some test data (adjust as needed)
-        self.post = Post.objects.create(title='Test Post', content='Test content')
-        self.resource = Resource.objects.create(title='Test Resource', description='Test description')
-        self.announcement = Announcement.objects.create(title='Test Announcement', content='Test content')
-        self.student = Student.objects.create(user=self.user, bio='Test bio')
+        self.post = Post.objects.create(
+            title='Test Post', 
+            content ="test data",
+            user = self.user,
+            slug="test-post",
+        )
+        self.tag = Tag.objects.create(name='Test Tag')
+        
+        self.post.tags.add(self.tag)
+        self.post.branch.add(self.branch)
+        
+        self.resource = Resource.objects.create(user=self.user,title='Test Resource', files='Test description')
+        self.resource.branch.add(self.branch)
+        self.resource.tags.add(self.tag)
+        
+        self.announcement = Announcement.objects.create(post_by=self.user,title='Test Announcement', content='Test content')
+        self.announcement.branch.add(self.branch)
 
         # Create a test client
         self.client = Client()
@@ -29,7 +53,7 @@ class SearchViewTestCase(TestCase):
         url = reverse('search')
 
         # Test with a valid query
-        response = self.client.post(url, {'q': 'test'})
+        response = self.client.post(url, {'q': 'Test'})
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'search/search.html')
 
