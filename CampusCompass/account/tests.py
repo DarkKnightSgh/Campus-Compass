@@ -7,6 +7,20 @@ from django.urls import reverse
 from taggit.models import Tag
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.contrib.staticfiles.testing import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.webdriver import WebDriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions as EC
+
 
 
 class ModelTestCase(TestCase):
@@ -208,3 +222,4 @@ class AccountActivationTestCase(TestCase):
 
         response = self.client.get(reverse('activate', args=[uidb64, token]))
         self.assertEqual(response.status_code, 302)  # Redirects after successful activation
+

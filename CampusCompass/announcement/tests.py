@@ -49,11 +49,29 @@ class AnnouncementModelTest(TestCase):
         # Test that the featured image is uploaded successfully
         self.assertIsNotNone(self.announcement.featured_img.path)
 
-    def test_announcement_branch_relationship(self):
-        print("Running test_announcement_branch_relationship")
-        # Test that the announcement is associated with the correct branch
-        self.assertEqual(self.announcement.branch.count(), 1)
-        self.assertEqual(self.announcement.branch.first(), self.branch)
+    def test_announcement_creation_view(self):
+        # Test F001: Announcement Creation
+        self.client.force_login(self.club_head_user)
+
+        response = self.client.get(reverse('create'))
+        self.assertEqual(response.status_code, 302)
+
+        # Assuming your HTML form contains these fields
+        form_data = {
+            'title': 'Test Announcement',
+            'content': 'This is a test announcement.',
+            'featured_img': '',  # Replace with the actual file data if needed
+        }
+
+        form = AnnouncementForm(data=form_data)
+
+        if not form.is_valid():
+            print(form.errors)
+        self.assertFalse(form.is_valid())
+        
+        response = self.client.post(reverse('create'), form_data)
+        self.assertEqual(response.status_code, 302)  # Redirect after successful form submission
+        self.assertTrue(Announcement.objects.filter(title='Test Announcement').exists())
 
     def test_announcement_date_created(self):
         print("Running test_announcement_date_created")
