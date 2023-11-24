@@ -1,0 +1,72 @@
+Scrum Guide
+https://scrumguides.org
+Git Documentation
+https://git-scm.com/doc
+Jira Documentation
+https://confluence.atlassian.com/jira
+Selenium Documentation
+https://www.selenium.dev/documentation/
+PyTest Documentation
+https://docs.pytest.org/en/stable/
+Python Documentation
+https://docs.python.org/3/
+Django Documentation
+https://docs.djangoproject.com/en/4.2/
+Bootstrap Documentation
+https://getbootstrap.com/docs/4.1/getting-started/introduction/
+Technical Documentation in Software Development
+https://www.altexsoft.com/blog/technical-documentation-in-software-development-types-best-practices-and-tools/
+Testing Documentation in Software Engineering
+https://www.geeksforgeeks.org/testing-documentation-software-engineering/
+Design Documentation in Software Engineering
+https://www.geeksforgeeks.org/design-documentation-in-software-engineering/
+Use Case Diagram for Library Management System
+https://www.geeksforgeeks.org/use-case-diagram-for-library-management-system/
+Data Flow Diagram
+https://www.lucidchart.com/pages/data-flow-diagram
+Data Flow Architecture
+https://www.tutorialspoint.com/software_architecture_design/data_flow_architecture.htm
+System Context Diagram
+https://online.visual-paradigm.com/knowledge/system-context-diagram/what-is-system-context-diagram/
+Introduction of ER Model
+https://www.geeksforgeeks.org/introduction-of-er-model/
+How to Write Software Requirements Specification (SRS) Document
+https://www.perforce.com/blog/alm/how-write-software-requirements-specification-srs-document
+Traceability Matrix
+https://www.guru99.com/traceability-matrix.html
+Gantt Chart in Agile Project Management
+https://www.atlassian.com/agile/project-management/gantt-chart
+Testing Django with Selenium
+https://ordinarycoders.com/blog/article/testing-django-selenium
+Django Selenium Documentation
+https://django-selenium.readthedocs.io/en/latest/
+
+
+Books: 
+"Code Complete" by Steve McConnell:
+McConnell, S. (2004). Code Complete: A Practical Handbook of Software Construction. Microsoft Press.
+
+"The Mythical Man-Month" by Frederick P. Brooks Jr.:
+Brooks Jr., F. P. (1995). The Mythical Man-Month: Essays on Software Engineering. Addison-Wesley.
+
+"Clean Code: A Handbook of Agile Software Craftsmanship" by Robert C. Martin:
+Martin, R. C. (2008). Clean Code: A Handbook of Agile Software Craftsmanship. Prentice Hall.
+
+"Design Patterns: Elements of Reusable Object-Oriented Software" by Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides, and Grady Booch:
+Gamma, E., Helm, R., Johnson, R., Vlissides, J., & Booch, G. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
+
+"The Pragmatic Programmer: Your Journey to Mastery" by Andrew Hunt and David Thomas:
+Hunt, A., & Thomas, D. (1999). The Pragmatic Programmer: Your Journey to Mastery. Addison-Wesley.
+
+
+Tools:
+GitHub
+https://github.com/
+Git
+https://git-scm.com/
+Jira
+https://www.atlassian.com/software/jira
+Draw.io
+https://app.diagrams.net/
+Selenium
+https://www.selenium.dev/

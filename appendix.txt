@@ -1,0 +1,135 @@
+Agile Software Development Model: An iterative and incremental approach to software development that prioritizes flexibility and collaboration.
+
+Admin: The college administrator for a specific college, utilizing the platform to communicate with students and share important information.
+
+API (Application Programming Interface): A set of rules that enables one software application to interact with another.
+
+Architecture & Design Choices: Decisions made regarding the system's overall structure and design.
+
+Bootstrap 5.1.3: A front-end framework utilized for design and styling elements in the Campus Compass system, providing standard design components and conventions.
+
+Button Placement: Ensuring that action buttons are appropriately positioned and labeled for clarity.
+
+Community Engagement Guidelines: Rules and principles for fostering positive and respectful interactions within a community.
+
+Concurrency: The ability of the system to handle multiple operations simultaneously.
+
+Content Hierarchy: Prioritizing the arrangement of content based on its importance and relevance to the user.
+
+Corporate Policies: Guidelines set by the corporate entity, in this case, the educational institution.
+
+CSS (Cascading Style Sheets): Style sheet language used for describing the look and formatting of a document written in HTML.
+
+CSRF Attacks (Cross-Site Request Forgery attacks): A security threat to be protected against.
+
+Data Backup: The process of creating copies of data to prevent data loss.
+
+Data Exchange and Flow: Processing user requests through Django, communication with the MySQL database, and presentation of data through Bootstrap.
+
+Data Flow Architecture: A depiction of how data moves through the system, illustrating processes, data stores, and data flow paths.
+
+Data Security: Measures to protect data from unauthorized access or alterations.
+
+Data Transfer Protocols: Mechanisms for transferring data between different software components.
+
+Development Code Files: The actual source code files containing the implementation of the system's functionalities.
+
+Doubt Resolution: The process of seeking academic answers from peers and mentors.
+
+Educational Best Practices: Accepted principles and methods for effective teaching and learning.
+
+Encryption: The process of converting information into a code to prevent unauthorized access.
+
+Entity Relationship Diagram (ERD): A visual representation of the relationships between entities in a database, showcasing how data is organized and connected.
+
+Error Categories: Classification of error messages into categories such as validation errors, system errors, user authentication errors, and data entry errors.
+
+Error Message Display Standards: Consistent format, prominent positioning, plain language, specificity, color coding, and categorization of error messages based on type.
+
+Flexibility: The ability to adapt to changing requirements by organizing work into time-boxed sprints.
+
+Frontend: The user interface part of the system, organized using the Django app structure.
+
+GDPR (General Data Protection Regulation): European Union regulations for data protection and privacy.
+
+GUI Standards: Design standards applied to containers, content sections, forms, data presentation, dashboard elements, dialog boxes, modal windows, and other user-facing modules.
+
+HTML (HyperText Markup Language): Standard markup language for creating web pages.
+
+HTTP (Hypertext Transfer Protocol): Standard protocol for communication with web servers in the Campus Compass system.
+
+Intellectual Property Rights: Legal rights that protect creations of the mind, such as inventions, designs, and artistic works.
+
+Internationalization: Designing and developing software to support multiple languages and locales.
+
+Jira: A comprehensive task tracking, agile planning, collaboration, and reporting platform.
+
+JS (JavaScript): Programming language that enables interactive web pages.
+
+Keyboard Shortcuts: Shortcut commands to enhance user productivity, including text styling, text alignment, undo/redo, and other operations within the rich text editor.
+
+Levels of DFD: Diagrams illustrating different levels of abstraction in a Data Flow Diagram.
+
+Levels of Effort Estimation: The estimation of effort required for different project tasks and phases.
+
+Linux: A family of open-source Unix-like operating systems.
+
+Maintainability: The ease with which the system can be updated and maintained.
+
+macOS: Operating system developed by Apple Inc. for its Macintosh line of computers.
+
+Mentorship Network: Connection between experienced students (mentors) and those seeking guidance.
+
+Model-View-Template (MVT) Architecture: Django's architecture where Models represent data, Views handle presentation logic, and Templates manage the presentation layer.
+
+MVC (Model-View-Controller): A software design pattern for developing web applications.
+
+MySQL: The relational database management system used for data storage and retrieval.
+
+Operating System (OS): Software that manages computer hardware and software resources.
+
+ORM (Object-Relational Mapping): Django's system for managing data and communication with the MySQL database.
+
+PDF (Portable Document Format): A common file format for educational resources.
+
+Performance Requirement: Criteria specifying the desired speed and efficiency of system processes.
+
+Portability: The ability of software to run on different platforms.
+
+Project Structure: The organization and layout of the project's files and directories, including frontend, backend, testing, and configuration files.
+
+QA (Quality Assurance): Ensuring the quality and compliance of the final product.
+
+Readability: The presentation of text and visual elements in a manner that is easy to read, considering factors such as typography, spacing, and contrast.
+
+Readme: A file containing information about the project, typically in the root directory of the repository.
+
+Reliability: The consistency and dependability of system operations.
+
+Reporting and Analytics: Features that allow the monitoring and analysis of system usage and user behavior.
+
+Requirement Traceability Matrix: A document that correlates system requirements with the elements of the system design.
+
+Repository Link: The link to the version control repository (GitHub) where the project's source code is stored.
+
+Resource Sharing Module: A component of Campus Compass facilitating the exchange of educational resources among students.
+
+RDBMS (Relational Database Management System): A type of database management system that stores data in tables with relationships.
+
+Rich Text Editor: A text editor with formatting capabilities, integrated into the project for enhanced content creation.
+
+Role-Based Access Control: A system where access permissions are determined by user roles.
+
+Selenium: Testing tool for automated testing of web applications.
+
+Sequence Diagrams: Diagrams that depict the interactions between different system components or actors over time.
+
+SMTP (Simple Mail Transfer Protocol): A protocol used in sending and receiving emails.
+
+Software Interfaces: Interactions with MySQL database, web browsers (Chrome, Edge), external APIs, libraries/frameworks (Django, JavaScript, Bootstrap), and external components.
+
+SMTP (Simple Mail Transfer Protocol): Used for email communication, particularly for account registration and password reset in the Campus Compass system.
+
+SRS (Software Requirements Specification): A document outlining the software requirements for the "Campus Compass" project.
+
+State Diagram: A diagram illustrating the different states a system or component can be in and the transitions
